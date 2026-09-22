@@ -1,0 +1,61 @@
+cff-version: 1.2.0
+title: "Lid-Driven Cavity Flow: a verified 2-D incompressible Navier-Stokes solver"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Toumi
+    given-names: Marouane
+version: 1.2.0
+license: MIT
+abstract: >-
+  A finite-difference solver for the two-dimensional incompressible
+  Navier-Stokes equations in vorticity-streamfunction form, applied to the
+  lid-driven cavity. Convection is treated explicitly with centered
+  differences and diffusion implicitly, giving a semi-implicit scheme that is
+  second order in space and first order in time. Wall vorticity is
+  reconstructed with Thom's conditions. The implementation is verified by the
+  method of manufactured solutions with observed orders of convergence
+  measured in space and time separately. Cavity fields are compared with
+  Ghia, Ghia and Shin (1982) at Reynolds numbers 400, 1000 and 3200, and with
+  Botella and Peyret (1998) at Reynolds number 1000. Published reference
+  anomalies and finite-time convergence limits are reported explicitly.
+keywords:
+  - computational fluid dynamics
+  - Navier-Stokes
+  - lid-driven cavity
+  - vorticity-streamfunction
+  - finite differences
+  - verification and validation
+references:
+  - type: article
+    authors:
+      - family-names: Ghia
+        given-names: U.
+      - family-names: Ghia
+        given-names: K. N.
+      - family-names: Shin
+        given-names: C. T.
+    title: >-
+      High-Re solutions for incompressible flow using the Navier-Stokes
+      equations and a multigrid method
+    journal: Journal of Computational Physics
+    volume: 48
+    issue: 3
+    start: 387
+    end: 411
+    year: 1982
+    doi: 10.1016/0021-9991(82)90058-4
+  - type: article
+    authors:
+      - family-names: Botella
+        given-names: O.
+      - family-names: Peyret
+        given-names: R.
+    title: Benchmark spectral results on the lid-driven cavity flow
+    journal: Computers & Fluids
+    volume: 27
+    issue: 4
+    start: 421
+    end: 433
+    year: 1998
+    doi: 10.1016/S0045-7930(98)00002-4

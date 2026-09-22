@@ -1,0 +1,35 @@
+# environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# tooling
+.pytest_cache/
+.ipynb_checkpoints/
+.claude/settings.local.json
+.DS_Store
+
+# simulation caches -- regenerate with `python scripts/run_production.py`
+# (the small .json result summaries ARE tracked; the field data is not)
+data/*.npz
+data/*.log
+data/logs/
+
+# superseded drafts and the original assignment (kept locally, not published)
+report/archive/
+
+# local experiments, render checks, compiler caches
+tmp/
+output/
+.Rhistory
+.mplconfig/
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+# report/report.pdf and final figures are intentionally published

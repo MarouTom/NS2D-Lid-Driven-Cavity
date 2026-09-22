@@ -1,0 +1,75 @@
+{
+  "signature": {
+    "kernel_sha256": "b6636334b9eb9109fee4def046feae1c10b217655e99c263eb3d1816f51105cc",
+    "analysis_sha256": "fbdefcaf3bd3a9edb1412dd4847a9cd899bd31b83c4ac609cb07369f331f10fa",
+    "case": "Re400_N65",
+    "cache_sha256": "85d941f451169ef069d6431e88c5e8f62b5b565cc648ebb183cd2c7b1ace4a61",
+    "duration": 10.0,
+    "dt_factors": [
+      1.0,
+      0.5
+    ]
+  },
+  "name": "Re400_N65",
+  "Re": 400,
+  "N": 65,
+  "initial_steady_defect": 1.0111540004187347e-06,
+  "trials": [
+    {
+      "dt_factor": 1.0,
+      "dt": 0.0025,
+      "duration": 9.999999999990912,
+      "max_update_rate": 9.45072820002224e-07,
+      "final_update_rate": 7.764153764355797e-08,
+      "final_steady_defect": 7.764062921744586e-08,
+      "stayed_below_threshold": true,
+      "drift": {
+        "u_l2": 1.3342182589966092e-07,
+        "u_linf": 2.3387936787244712e-07,
+        "v_l2": 1.0080821561060301e-07,
+        "v_linf": 1.825292659241029e-07,
+        "psi_linf": 3.455841666305526e-08,
+        "omega_interior_linf": 3.0297748279117798e-06,
+        "psi_min_change": 2.9969820181108275e-08,
+        "psi_min_change_percent": 2.7482163845377948e-05
+      }
+    },
+    {
+      "dt_factor": 0.5,
+      "dt": 0.00125,
+      "duration": 9.999999999990912,
+      "max_update_rate": 9.639148146334264e-07,
+      "final_update_rate": 7.761080667023634e-08,
+      "final_steady_defect": 7.761027428013212e-08,
+      "stayed_below_threshold": true,
+      "drift": {
+        "u_l2": 1.3342709300989823e-07,
+        "u_linf": 2.3388852010697292e-07,
+        "v_l2": 1.0081173583458152e-07,
+        "v_linf": 1.825362492269278e-07,
+        "psi_linf": 3.4559098638364816e-08,
+        "omega_interior_linf": 3.0298620874447124e-06,
+        "psi_min_change": 2.997174966545835e-08,
+        "psi_min_change_percent": 2.7483933172144854e-05
+      }
+    }
+  ],
+  "half_dt_vs_base_dt": {
+    "u_l2": 5.63489503788625e-12,
+    "u_linf": 9.15401088263934e-12,
+    "v_l2": 3.9898975082368985e-12,
+    "v_linf": 7.23643367450677e-12,
+    "psi_linf": 1.974309604690916e-12,
+    "omega_interior_linf": 1.38957290118924e-10,
+    "psi_min_change": 1.929484350071675e-12,
+    "psi_min_change_percent": 1.7693272531543425e-09
+  },
+  "milestone_changes": [],
+  "interpretation": "measured finite-window sensitivity, not a rigorous remaining-transient bound",
+  "measured_utc": "2026-09-20T17:48:08.672877+00:00",
+  "environment": {
+    "python": "3.14.3",
+    "numpy": "2.5.2",
+    "scipy": "1.18.0"
+  }
+}

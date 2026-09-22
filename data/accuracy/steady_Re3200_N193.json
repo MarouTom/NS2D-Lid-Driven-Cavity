@@ -1,0 +1,121 @@
+{
+  "signature": {
+    "kernel_sha256": "b6636334b9eb9109fee4def046feae1c10b217655e99c263eb3d1816f51105cc",
+    "analysis_sha256": "fbdefcaf3bd3a9edb1412dd4847a9cd899bd31b83c4ac609cb07369f331f10fa",
+    "case": "Re3200_N193",
+    "cache_sha256": "6fd59a979049daaaddfa216eea6ab1f46a34271be826990c92f787bd8b2b2238",
+    "duration": 10.0,
+    "dt_factors": [
+      1.0,
+      0.5
+    ]
+  },
+  "name": "Re3200_N193",
+  "Re": 3200,
+  "N": 193,
+  "initial_steady_defect": 1.004822268058092e-06,
+  "trials": [
+    {
+      "dt_factor": 1.0,
+      "dt": 0.0003125,
+      "duration": 9.99999999839929,
+      "max_update_rate": 9.99591520667309e-07,
+      "final_update_rate": 8.245592653111089e-07,
+      "final_steady_defect": 8.286416033342903e-07,
+      "stayed_below_threshold": true,
+      "drift": {
+        "u_l2": 2.2984420973328653e-07,
+        "u_linf": 3.3045783043306187e-07,
+        "v_l2": 2.1918199626492797e-07,
+        "v_linf": 3.2337117916725333e-07,
+        "psi_linf": 1.0058801086509916e-07,
+        "omega_interior_linf": 9.093808316151808e-06,
+        "psi_min_change": -1.0058256834366563e-07,
+        "psi_min_change_percent": 8.64013804616136e-05
+      }
+    },
+    {
+      "dt_factor": 0.5,
+      "dt": 0.00015625,
+      "duration": 10.000000002037268,
+      "max_update_rate": 1.0015355655923486e-06,
+      "final_update_rate": 8.245933713624254e-07,
+      "final_steady_defect": 8.266389581734757e-07,
+      "stayed_below_threshold": false,
+      "drift": {
+        "u_l2": 2.2984470022102346e-07,
+        "u_linf": 3.3045847391832694e-07,
+        "v_l2": 2.1918247888099267e-07,
+        "v_linf": 3.233717107420375e-07,
+        "psi_linf": 1.0058824732872562e-07,
+        "omega_interior_linf": 9.093931854664561e-06,
+        "psi_min_change": -1.0058280461300306e-07,
+        "psi_min_change_percent": 8.6401583419216e-05
+      }
+    }
+  ],
+  "half_dt_vs_base_dt": {
+    "u_l2": 5.197895035909947e-13,
+    "u_linf": 7.247535904753022e-13,
+    "v_l2": 5.62487577739529e-13,
+    "v_linf": 1.707800567629647e-12,
+    "psi_linf": 2.3973878437999474e-13,
+    "omega_interior_linf": 1.2722622955152474e-10,
+    "psi_min_change": -2.3626933742804113e-13,
+    "psi_min_change_percent": 2.0295742704465598e-10
+  },
+  "milestone_changes": [
+    {
+      "label": "t100",
+      "requested_time": 100.0,
+      "actual_time": 100.00000000073213,
+      "change_to_converged": {
+        "u_l2": 0.005534324864737441,
+        "u_linf": 0.008051650914471242,
+        "v_l2": 0.005318987951434021,
+        "v_linf": 0.008070070521955852,
+        "psi_linf": 0.002426881199189962,
+        "omega_interior_linf": 0.24696399916389566,
+        "psi_min_change": -0.0024261271558631697,
+        "psi_min_change_percent": 2.128424010557927
+      }
+    },
+    {
+      "label": "t150",
+      "requested_time": 150.0,
+      "actual_time": 150.0000000018235,
+      "change_to_converged": {
+        "u_l2": 0.0021666845621651923,
+        "u_linf": 0.003125988942020097,
+        "v_l2": 0.0020661930974463826,
+        "v_linf": 0.0030282183207184232,
+        "psi_linf": 0.0009470704870960106,
+        "omega_interior_linf": 0.08582301824205274,
+        "psi_min_change": -0.0009468732897703197,
+        "psi_min_change_percent": 0.8200431498697859
+      }
+    },
+    {
+      "label": "t300",
+      "requested_time": 300.0,
+      "actual_time": 300.00000000509766,
+      "change_to_converged": {
+        "u_l2": 0.00011940284449062456,
+        "u_linf": 0.00017162489851418883,
+        "v_l2": 0.00011384647063553912,
+        "v_linf": 0.00016792192801329264,
+        "psi_linf": 5.225217719907749e-05,
+        "omega_interior_linf": 0.00472264348877971,
+        "psi_min_change": -5.224893539941544e-05,
+        "psi_min_change_percent": 0.04490248448988365
+      }
+    }
+  ],
+  "interpretation": "measured finite-window sensitivity, not a rigorous remaining-transient bound",
+  "measured_utc": "2026-09-20T18:09:17.539523+00:00",
+  "environment": {
+    "python": "3.14.3",
+    "numpy": "2.5.2",
+    "scipy": "1.18.0"
+  }
+}

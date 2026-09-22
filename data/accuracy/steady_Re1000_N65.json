@@ -1,0 +1,91 @@
+{
+  "signature": {
+    "kernel_sha256": "b6636334b9eb9109fee4def046feae1c10b217655e99c263eb3d1816f51105cc",
+    "analysis_sha256": "fbdefcaf3bd3a9edb1412dd4847a9cd899bd31b83c4ac609cb07369f331f10fa",
+    "case": "Re1000_N65",
+    "cache_sha256": "71dcaee5441584d22a7a6302a59aa877eaa251f82fd6c281125bab763fa38c7e",
+    "duration": 10.0,
+    "dt_factors": [
+      1.0,
+      0.5
+    ]
+  },
+  "name": "Re1000_N65",
+  "Re": 1000,
+  "N": 65,
+  "initial_steady_defect": 1.0031277071220757e-06,
+  "trials": [
+    {
+      "dt_factor": 1.0,
+      "dt": 0.001,
+      "duration": 10.000000000047748,
+      "max_update_rate": 9.930847255645858e-07,
+      "final_update_rate": 4.975806433549224e-07,
+      "final_steady_defect": 5.008655890037517e-07,
+      "stayed_below_threshold": true,
+      "drift": {
+        "u_l2": 2.674493455461393e-07,
+        "u_linf": 3.9109136507065045e-07,
+        "v_l2": 2.422343962737381e-07,
+        "v_linf": 3.79087432111902e-07,
+        "psi_linf": 1.1834802725319005e-07,
+        "omega_interior_linf": 7.183798306442668e-06,
+        "psi_min_change": 1.1833052922238796e-07,
+        "psi_min_change_percent": 0.00011242562238626016
+      }
+    },
+    {
+      "dt_factor": 0.5,
+      "dt": 0.0005,
+      "duration": 9.999999999763531,
+      "max_update_rate": 9.97186333506761e-07,
+      "final_update_rate": 4.975575507160102e-07,
+      "final_steady_defect": 4.992016613414307e-07,
+      "stayed_below_threshold": true,
+      "drift": {
+        "u_l2": 2.674519010026679e-07,
+        "u_linf": 3.9109438176865297e-07,
+        "v_l2": 2.4223672664907945e-07,
+        "v_linf": 3.790910563239436e-07,
+        "psi_linf": 1.1834914123709517e-07,
+        "omega_interior_linf": 7.18402378119265e-06,
+        "psi_min_change": 1.1833164481611647e-07,
+        "psi_min_change_percent": 0.00011242668230984946
+      }
+    }
+  ],
+  "half_dt_vs_base_dt": {
+    "u_l2": 2.6476226650295118e-12,
+    "u_linf": 4.526157226791838e-12,
+    "v_l2": 2.534720735604761e-12,
+    "v_linf": 4.37000435837831e-12,
+    "psi_linf": 1.1153578061140479e-12,
+    "omega_interior_linf": 2.254747499819132e-10,
+    "psi_min_change": 1.1155937285067807e-12,
+    "psi_min_change_percent": 1.0599247809305929e-09
+  },
+  "milestone_changes": [
+    {
+      "label": "t100",
+      "requested_time": 100.0,
+      "actual_time": 100.00000000011343,
+      "change_to_converged": {
+        "u_l2": 8.061614682726115e-06,
+        "u_linf": 1.178379358091064e-05,
+        "v_l2": 7.299346913585488e-06,
+        "v_linf": 1.1425268245712772e-05,
+        "psi_linf": 3.566107025385068e-06,
+        "omega_interior_linf": 0.00021605882427699896,
+        "psi_min_change": 3.565574373129432e-06,
+        "psi_min_change_percent": 0.0033875310232779807
+      }
+    }
+  ],
+  "interpretation": "measured finite-window sensitivity, not a rigorous remaining-transient bound",
+  "measured_utc": "2026-09-20T17:48:48.623030+00:00",
+  "environment": {
+    "python": "3.14.3",
+    "numpy": "2.5.2",
+    "scipy": "1.18.0"
+  }
+}

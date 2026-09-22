@@ -1,0 +1,91 @@
+{
+  "name": "Re3200_N193",
+  "Re": 3200,
+  "N": 193,
+  "h": 0.005208333333333333,
+  "dt": 0.0003125,
+  "T": 1000.0,
+  "steps": 1711200,
+  "t_final": 534.7500000060835,
+  "final_residual": 9.999098438129295e-07,
+  "converged": true,
+  "wall_time_s": 1429.0031532919966,
+  "run_signature": {
+    "spec": {
+      "Re": 3200,
+      "N": 193,
+      "T": 1000.0,
+      "frames": false
+    },
+    "steady_tol": 1e-06,
+    "kernel_sha256": "b6636334b9eb9109fee4def046feae1c10b217655e99c263eb3d1816f51105cc",
+    "runner_sha256": "747e15262357f2181f7ce47c08da1b33b2ce07d11f0a6e751078466beaf82693",
+    "initial_condition": "rest",
+    "fft_workers": 2
+  },
+  "provenance": "fresh integration from rest with recorded numerical-source and runner hashes",
+  "started_utc": "2026-09-20T17:43:30.036740+00:00",
+  "finished_utc": "2026-09-20T18:07:18.892733+00:00",
+  "steady_tol": 1e-06,
+  "milestones": [
+    {
+      "label": "t100",
+      "requested_time": 100.0,
+      "actual_time": 100.00000000073213
+    },
+    {
+      "label": "t150",
+      "requested_time": 150.0,
+      "actual_time": 150.0000000018235
+    },
+    {
+      "label": "t300",
+      "requested_time": 300.0,
+      "actual_time": 300.00000000509766
+    }
+  ],
+  "environment": {
+    "python": "3.14.3",
+    "numpy": "2.5.2",
+    "scipy": "1.18.0",
+    "ns2d": "1.3.0"
+  },
+  "max_divergence": 1.3322676295501878e-14,
+  "poisson_residual": 8.86402062860725e-12,
+  "circulation": -1.000000000000031,
+  "circulation_identity": -0.9999999999999998,
+  "circulation_exact": -1.0,
+  "psi_min": -0.11641314965835813,
+  "vortex_x": 0.5187616107066817,
+  "vortex_y": 0.540987937489072,
+  "psi_min_ref": -0.120377,
+  "vortex_x_ref": 0.5165,
+  "vortex_y_ref": 0.5469,
+  "u_rms": 0.19161329124493565,
+  "v_rms": 0.01309273152676011,
+  "u_rms_unflagged": 0.014209072622835385,
+  "flagged_u_y": [
+    0.4531
+  ],
+  "flagged_v_x": [],
+  "v_rms_unflagged": 0.01309273152676011,
+  "corner_vortices": {
+    "BL": [
+      0.0010425781751883195,
+      0.08175179439394901,
+      0.11800771154164008
+    ],
+    "BR": [
+      0.0027487384575651396,
+      0.8255646660809598,
+      0.0855356187641709
+    ],
+    "TL": [
+      0.0007038670150880188,
+      0.05535264581489316,
+      0.9021842654027373
+    ]
+  },
+  "cache_sha256": "6fd59a979049daaaddfa216eea6ab1f46a34271be826990c92f787bd8b2b2238",
+  "field_sha256": "57a99eee3c1b6d6d4fed030d772f9dd6ed868ff2b40a126a4f3b476e67331bdd"
+}

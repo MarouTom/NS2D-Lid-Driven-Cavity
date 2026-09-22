@@ -1,0 +1,71 @@
+{
+  "name": "Re400_N129",
+  "Re": 400,
+  "N": 129,
+  "h": 0.0078125,
+  "dt": 0.0025,
+  "T": 100.0,
+  "steps": 24550,
+  "t_final": 61.374999999980425,
+  "final_residual": 9.680913848342243e-07,
+  "converged": true,
+  "wall_time_s": 10.289121665991843,
+  "run_signature": {
+    "spec": {
+      "Re": 400,
+      "N": 129,
+      "T": 100.0,
+      "save_every": 250,
+      "frames": true
+    },
+    "steady_tol": 1e-06,
+    "kernel_sha256": "b6636334b9eb9109fee4def046feae1c10b217655e99c263eb3d1816f51105cc",
+    "runner_sha256": "747e15262357f2181f7ce47c08da1b33b2ce07d11f0a6e751078466beaf82693",
+    "initial_condition": "rest",
+    "fft_workers": 1
+  },
+  "provenance": "fresh integration from rest with recorded numerical-source and runner hashes",
+  "started_utc": "2026-09-20T17:43:33.676763+00:00",
+  "finished_utc": "2026-09-20T17:43:43.966622+00:00",
+  "steady_tol": 1e-06,
+  "milestones": [],
+  "environment": {
+    "python": "3.14.3",
+    "numpy": "2.5.2",
+    "scipy": "1.18.0",
+    "ns2d": "1.3.0"
+  },
+  "max_divergence": 7.105427357601002e-15,
+  "poisson_residual": 3.708588991457873e-12,
+  "circulation": -1.0000000000081815,
+  "circulation_identity": -1.0,
+  "circulation_exact": -1.0,
+  "psi_min": -0.112775667949428,
+  "vortex_x": 0.555091151013214,
+  "vortex_y": 0.6065711618594302,
+  "psi_min_ref": -0.113909,
+  "vortex_x_ref": 0.5547,
+  "vortex_y_ref": 0.6055,
+  "u_rms": 0.0025725073604360117,
+  "v_rms": 0.03502271583331893,
+  "u_rms_unflagged": 0.0025725073604360117,
+  "flagged_u_y": [],
+  "flagged_v_x": [
+    0.9063
+  ],
+  "v_rms_unflagged": 0.0021434919801412984,
+  "corner_vortices": {
+    "BL": [
+      1.474805859428579e-05,
+      0.05035631322132997,
+      0.04708536799274264
+    ],
+    "BR": [
+      0.0006447478438148294,
+      0.8852565075977128,
+      0.12283494559512381
+    ]
+  },
+  "cache_sha256": "dab91f25196fd6eca46372ec208041fb6ffba8d2db866578d1e4172a9c4b61a3",
+  "field_sha256": "45ab171cf512459331e36f5959e470d62831b35fb3a948614bd0a61fea9d83db"
+}

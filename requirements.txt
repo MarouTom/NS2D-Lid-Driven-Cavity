@@ -1,0 +1,2 @@
+# Install the project and its development/notebook extras.
+-e .[dev,notebook]
