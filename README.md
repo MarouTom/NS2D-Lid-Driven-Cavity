@@ -1,4 +1,4 @@
-# Navier–Stokes in two dimensions
+# 2D Incompressible Navier–Stokes: Lid-Driven Cavity Problem
 
 **Fluid motion in a lid-driven cavity, computed and visualised in Python.**
 
