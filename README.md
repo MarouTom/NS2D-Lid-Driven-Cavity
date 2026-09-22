@@ -7,9 +7,9 @@
 
 ![Particles moving through the computed cavity flows at Reynolds numbers 400, 1000 and 3200](figures/cavity_particles.gif)
 
-*Follow the fluid around the cavity. These passive tracers move through the converged velocity fields on 257² grids. Colour shows speed relative to the lid; every panel uses the same physical clock and colour scale. A steady velocity field still carries moving fluid. Particle positions reset when the animation loops.*
+*Passive tracers advected through the converged steady velocity fields on 257² grids. Colour shows speed relative to the lid velocity; all panels share the same time and colour scale. Tracer positions reset each time the animation loops.*
 
-A square cavity is filled with fluid. Move its upper wall to the right and viscosity drags the neighbouring fluid with it, setting up a clockwise circulation and smaller corner eddies. This project computes that motion from the incompressible Navier–Stokes equations, then checks the solution through refinement studies and comparisons with published results.
+A square cavity is filled with fluid, and its top wall slides to the right at constant speed. Viscosity drags the adjacent fluid along, driving a large clockwise vortex and smaller counter-rotating eddies in the corners. This project solves for that flow from the 2-D incompressible Navier–Stokes equations and checks the solution through grid-refinement studies and comparison with published benchmark results.
 
 **[Read the illustrated report](report/report.pdf)** · **[Explore the executed notebook](notebooks/lid_driven_cavity.ipynb)** · **[Inspect the reference data](docs/references.md)**
 
