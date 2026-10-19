@@ -13,6 +13,8 @@
 
 <!-- Inline player: upload figures/cavity_particles.mp4 through GitHub's web editor and paste the
      resulting https://github.com/user-attachments/assets/... URL on its own line below this comment. -->
+https://github.com/user-attachments/assets/09e60728-4480-42cf-a6fa-aa3f81e8e082
+
 <a href="figures/cavity_particles.mp4"><img src="figures/cavity_particles.png" width="100%" alt="Frame from the tracer animation: three dark cavity panels at Reynolds numbers 400, 1000 and 3200, each with a moving-lid arrow on top, faint streamlines, and 400 glowing particles leaving fading trails coloured from teal (slow) to pale yellow (lid speed). The main vortex moves toward the centre and corner eddies grow as the Reynolds number increases."></a>
 
 <sub>▶ <b><a href="figures/cavity_particles.mp4">Play the animation</a></b> (MP4, Manim) · Passive tracers advected through the converged steady velocity fields on 257² grids. Colour shows speed relative to the lid; all panels share one clock and one colour scale.</sub>
@@ -58,6 +60,9 @@ A square cavity is filled with fluid, and its top wall slides to the right at co
 <p align="center">
 <!-- Inline player: upload figures/cavity_startup.mp4 through GitHub's web editor and paste the
      resulting https://github.com/user-attachments/assets/... URL on its own line below this comment. -->
+
+https://github.com/user-attachments/assets/181addc3-0449-4acb-8039-54ebb8ac036f
+
 <a href="figures/cavity_startup.mp4"><img src="figures/cavity_startup.png" width="88%" alt="Final frame of the startup animation at t = 20 for Re = 400. Left: speed with instantaneous streamlines around a vortex that has drifted toward the centre. Right: signed vorticity, with a thin blue layer under the lid and orange vorticity along the right wall. Bottom: the kinetic-energy curve from t = 0 to 20 approaching its dashed steady value."></a>
 <br><sub>▶ <b><a href="figures/cavity_startup.mp4">Play the animation</a></b> (MP4, Manim)</sub>
 </p>
