@@ -1,6 +1,6 @@
 <div align="center">
 
-# 2D Incompressible Navier–Stokes: The Lid-Driven Cavity
+# 2D Incompressible Navier-Stokes: The Lid-Driven Cavity
 
 **A verified finite-difference solver for the classic CFD benchmark, with grid-convergence evidence, literature validation and animated visualizations.**
 
@@ -23,14 +23,14 @@
 
 ---
 
-A square cavity is filled with fluid, and its top wall slides to the right at constant speed. Viscosity drags the adjacent fluid along, driving a large clockwise vortex and smaller counter-rotating eddies in the corners. This project solves for that flow from the 2-D incompressible Navier–Stokes equations, then **measures** how good the answer is: manufactured-solution convergence, three-grid Richardson estimates, an independent fourth grid, time-step refinement, and comparison with two published benchmarks.
+A square cavity is filled with fluid, and its top wall slides to the right at constant speed. Viscosity drags the adjacent fluid along, driving a large clockwise vortex and smaller counter-rotating eddies in the corners. This project solves for that flow from the 2-D incompressible Navier-Stokes equations, then **measures** how good the answer is: manufactured-solution convergence, three-grid Richardson estimates, an independent fourth grid, time-step refinement, and comparison with two published benchmarks.
 
 ### At a glance
 
 | | Measured value | Evidence |
 |---|---|---|
 | **Spatial order** (manufactured solution, ψ and ω) | 2.04 on the finest grid pair | [verification.json](data/verification.json) |
-| **Temporal order** (backward-Euler diffusion, explicit convection) | 1.02 – 1.05 | [verification.json](data/verification.json) |
+| **Temporal order** (backward-Euler diffusion, explicit convection) | 1.02 - 1.05 | [verification.json](data/verification.json) |
 | **Primary vortex**, Re = 1000, 257² | ψ<sub>min</sub> = −0.118074 · 0.12 % from Ghia et al. | [validation.json](data/validation.json) |
 | **Grid uncertainty** of ψ<sub>min</sub> (conditional GCI) | 0.33 % · 0.94 % · 3.32 % at Re = 400 · 1000 · 3200 | [accuracy.json](data/accuracy.json) |
 | **Discrete divergence** of every production field | ≤ 1.5 × 10⁻¹⁴ | [validation.json](data/validation.json) |
@@ -85,7 +85,7 @@ These are the **first 20 dimensionless time units of the actual Re = 400 simulat
 
 ## The model
 
-A viscous incompressible fluid fills a unit square. The upper wall moves right with unit speed; the other walls are stationary. In the vorticity–streamfunction formulation,
+A viscous incompressible fluid fills a unit square. The upper wall moves right with unit speed; the other walls are stationary. In the vorticity-streamfunction formulation,
 
 $$
 \frac{\partial\omega}{\partial t}
@@ -256,7 +256,7 @@ A completed run, a smooth plot or a stable time step is not evidence of a correc
 |---|---|---|
 | Equations, units and nondimensionalisation stated | [The model](#the-model) and the [report](report/report.pdf) | 2-D, incompressible, constant viscosity |
 | Geometry, boundaries and initial state explicit | Unit square, no-slip walls, lid u = 1, start from rest | Corner singularities are not regularised |
-| Resolution evidence | Three grids per Re, fitted orders 1.92–2.03, 513² check | GCI is conditional, not a bound |
+| Resolution evidence | Three grids per Re, fitted orders 1.92-2.03, 513² check | GCI is conditional, not a bound |
 | Time-step evidence | MMS temporal order ≈ 1; transient dt/dt/2/dt/4 study; suggested-step analysis | Not a nonlinear stability theorem |
 | Conservation and identities | Discrete divergence ≤ 1.5 × 10⁻¹⁴; circulation identity; Poisson residual < 10⁻⁸ | Algebraic consistency, not accuracy |
 | Observable sensitivity | ψ<sub>min</sub>, vortex position, energy, centre vorticity, secondary eddy | Secondary eddy at Re = 3200 is least certain |
