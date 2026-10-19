@@ -33,3 +33,5 @@ report/*.out
 report/*.toc
 report/*.synctex.gz
 # report/report.pdf and final figures are intentionally published
+
+.claude
