@@ -71,7 +71,7 @@ When changing the numerical method, rerun the production study and update the na
 
 ## README animations
 
-Run `python scripts/build_animations.py` after the production caches are available. The README uses an animation of passive tracers in the converged 257² fields and a separate animation of the recorded Re = 400 startup. Input hashes, GIF hashes, rendering settings and tracer-step checks are recorded in `data/animations.json`. See [animations.md](animations.md) for the interpolation and timing conventions. The GIFs are included in the repository and play without the field caches.
+Run `python scripts/build_animations.py` after the production caches are available; it needs Manim (`pip install -e ".[animation]"`, or the conda-forge environment described in [animations.md](animations.md)). The README uses an animation of passive tracers in the converged 257² fields and a separate animation of the recorded Re = 400 startup, both drawn by the Manim scenes in `scripts/manim_scenes.py`. Input hashes, video and poster hashes, rendering settings, decoded-frame PSNR and tracer-step checks are recorded in `data/animations.json`. See [animations.md](animations.md) for the interpolation and timing conventions. The MP4s and posters are included in the repository and play without the field caches.
 
 ## Notebook
 

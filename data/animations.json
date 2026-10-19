@@ -1,62 +1,85 @@
 {
   "particles": {
-    "file": "figures/cavity_particles.gif",
-    "frames": 81,
-    "duration_ms_per_frame": 100,
-    "size_bytes": 9591842,
-    "width": 960,
-    "height": 473,
-    "palette_colours": 128,
-    "sha256": "240a6f80ed8a379aea090037099493035ab1b80fe53ccb945485482b1b466fb0",
+    "file": "figures/cavity_particles.mp4",
+    "poster": "figures/cavity_particles.png",
+    "poster_frame": 124,
+    "frames": 207,
+    "fps": 20,
+    "duration_s": 10.35,
+    "size_bytes": 6059386,
+    "width": 1440,
+    "height": 720,
+    "renderer": "manim 0.19.1 (Cairo)",
+    "supersampling": 2,
+    "codec": "H.264 (libx264, crf 22, preset slow, tune animation, yuv420p)",
+    "psnr_db_vs_rendered_frames": {
+      "mean": 36.38,
+      "min": 34.37
+    },
+    "sha256": "b1c15424b133beed6c4151632dd193c7c966e048cc208dab35cf7733275e5119",
+    "poster_sha256": "062ef6927a4b06040534080a3152cddbf6b054fd2ae5733e3471285ac40b4e1d",
     "meaning": "RK4 passive tracers in frozen steady fields; velocity is the rotated gradient of a bicubic streamfunction interpolant",
     "seed": 2026,
-    "particles_per_panel": 256,
-    "frame_dt": 0.2,
+    "particles_per_panel": 400,
+    "frame_dt": 0.1,
     "tracer_dt": 0.00125,
     "tracer_time_interval": [
       0,
-      16
+      16.0
     ],
+    "trail_length": 1.2000000000000002,
+    "loop_fade_frames": 6,
     "inputs": [
       {
         "case": "Re400_N257",
         "cache_sha256": "e652426cd785bdef5782c4af415d41a5ce98edc93b375d185368471d59630219",
-        "max_position_change_when_tracer_step_halved": 4.7502296549690515e-06
+        "max_position_change_when_tracer_step_halved": 4.7573559685521875e-06
       },
       {
         "case": "Re1000_N257",
         "cache_sha256": "84dfdb0f93b797c0179bc6033b911784384c2a27f53d4ccd6ba00889e9f8b14b",
-        "max_position_change_when_tracer_step_halved": 6.840450993453719e-06
+        "max_position_change_when_tracer_step_halved": 8.033244746785875e-06
       },
       {
         "case": "Re3200_N257",
         "cache_sha256": "b1223ef11618654a6d0ad83789a4269a64d2792a497b82bc42e95c8a490b4017",
-        "max_position_change_when_tracer_step_halved": 0.00013662929928443012
+        "max_position_change_when_tracer_step_halved": 9.406665358160864e-05
       }
     ],
-    "builder_sha256": "a7e57f1df9e7843d7a387cffd68d50f94746c0ae96e51c9be4701c5b57e92469"
+    "builder_sha256": "e7d899f9a9a5e18545e4e6334fb7aa2d7d3168bee1b95679420675cd75b7603e"
   },
   "startup": {
-    "file": "figures/cavity_startup.gif",
-    "frames": 129,
-    "duration_ms_per_frame": 80,
-    "size_bytes": 5806555,
-    "width": 960,
-    "height": 609,
-    "palette_colours": 128,
-    "sha256": "080c34d22a40466758a883b2714c9b7aaf52a6bc2186c35a9fa89236750f7091",
-    "meaning": "Transient fields, linearly interpolated in time for display only",
+    "file": "figures/cavity_startup.mp4",
+    "poster": "figures/cavity_startup.png",
+    "poster_frame": 211,
+    "frames": 212,
+    "fps": 20,
+    "duration_s": 10.6,
+    "size_bytes": 617007,
+    "width": 1280,
+    "height": 1024,
+    "renderer": "manim 0.19.1 (Cairo)",
+    "supersampling": 2,
+    "codec": "H.264 (libx264, crf 22, preset slow, tune animation, yuv420p)",
+    "psnr_db_vs_rendered_frames": {
+      "mean": 40.35,
+      "min": 39.65
+    },
+    "sha256": "f961c9ff2f190a5ff22efb9ed09f548c827be68c3559cc00ef524993fee4a279",
+    "poster_sha256": "10324ff9970540ccae9d665a918ce31b024ff553781aedd404319ec7c9182236",
+    "meaning": "Transient fields, linearly interpolated in time for display only; energy curve uses recorded solver diagnostics",
     "case": "Re400_N129",
     "cache_sha256": "dab91f25196fd6eca46372ec208041fb6ffba8d2db866578d1e4172a9c4b61a3",
     "simulation_time_interval": [
       0,
-      20
+      20.0
     ],
-    "snapshot_spacing": 0.625,
+    "snapshot_spacing": 0.6249999999999977,
+    "display_time_step": 0.125,
     "vorticity_colour_limits": [
       -20,
       20
     ],
-    "builder_sha256": "a7e57f1df9e7843d7a387cffd68d50f94746c0ae96e51c9be4701c5b57e92469"
+    "builder_sha256": "e7d899f9a9a5e18545e4e6334fb7aa2d7d3168bee1b95679420675cd75b7603e"
   }
 }

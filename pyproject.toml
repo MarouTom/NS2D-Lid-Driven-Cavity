@@ -38,6 +38,9 @@ dependencies = [
 [project.optional-dependencies]
 notebook = ["jupyterlab>=4.0", "nbformat>=5.9", "nbclient>=0.10", "ipykernel>=6.29"]
 dev = ["pytest>=7.4"]
+# README animations are drawn with Manim (Cairo/Pango). On platforms without
+# pycairo wheels, the conda-forge `manim` package bundles the native libraries.
+animation = ["manim>=0.19", "contourpy>=1.2"]
 
 [tool.setuptools]
 packages = ["ns2d"]

@@ -1,96 +1,129 @@
 #!/usr/bin/env python3
-"""Build README GIFs from audited production fields; never run a new CFD case.
+"""Build README videos from audited production fields; never run a new CFD case.
 
 The particle movie integrates passive tracers in frozen, converged velocities.
 The startup movie interpolates recorded fields for display only. Neither changes
 the production fields or supplies additional numerical accuracy evidence.
+
+Drawing is done by Manim (``scripts/manim_scenes.py``, Cairo renderer). Frames
+are rendered at twice the delivered resolution and downsampled with a Lanczos
+filter, then encoded as H.264 MP4 (yuv420p, web fast-start). A full-colour MP4
+is a fraction of the size of a GIF of the same frames, because thousands of thin
+moving trails defeat GIF's palette and LZW compression. Each video is decoded
+again; the frame count, size and PSNR against the rendered frames are recorded.
+A still poster frame is written next to each video for the README.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import shutil
+from fractions import Fraction
+from importlib.metadata import version
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
 from scipy.interpolate import RectBivariateSpline
 
-from build_results import ROOT, FIGS, audit_case, plt, pp
+from build_results import ROOT, FIGS, audit_case, pp
 from ns2d.boundary import WallVelocities
-from matplotlib.collections import LineCollection
-from matplotlib.colors import LinearSegmentedColormap, Normalize
 
-BG, PANEL, TEXT, MUTED = "#09151f", "#102330", "#eaf2f5", "#9db4c2"
-SPEED = LinearSegmentedColormap.from_list(
-    "cavity_speed", ["#122c3d", "#197f87", "#54cebb", "#f4dfa2"]
-)
-TRACER = LinearSegmentedColormap.from_list(
-    "cavity_tracer", ["#419fa7", "#6ce3c6", "#ffe2a2"]
-)
-VORTICITY = LinearSegmentedColormap.from_list(
-    "cavity_vorticity", ["#63d8ec", "#102330", "#ffad71"]
-)
+SUPERSAMPLE = 2       # Manim renders at this multiple of the delivered size
+FPS = 20
+CRF = 22              # x264 constant-rate factor: lower is higher quality
 QA = ROOT / "tmp/animation_review"
+PREVIEW = False       # --preview: short, 1x renders kept in tmp/ only
 
 
-def theme():
-    plt.rcParams.update({
-        "font.family": "DejaVu Sans", "font.size": 10,
-        "text.color": TEXT, "axes.labelcolor": MUTED,
-        "xtick.color": MUTED, "ytick.color": MUTED,
-        "axes.edgecolor": "#526572", "figure.facecolor": BG,
-        "axes.facecolor": PANEL, "savefig.facecolor": BG,
-        "mathtext.fontset": "dejavusans",
-    })
+def render(scene_cls, data, width, height, workdir):
+    """Render a Manim scene and store each downsampled frame as a PNG in ``workdir``."""
+    from manim import tempconfig
+    from manim_scenes import BG
+
+    scale = 1 if PREVIEW else SUPERSAMPLE
+    shutil.rmtree(workdir, ignore_errors=True)
+    workdir.mkdir(parents=True)
+    options = {
+        "pixel_width": width * scale, "pixel_height": height * scale,
+        "frame_height": 8.0, "frame_width": 8.0 * width / height, "frame_rate": FPS,
+        "background_color": BG, "write_to_movie": False, "save_last_frame": False,
+        "disable_caching": True, "progress_bar": "none", "verbosity": "WARNING",
+        "media_dir": str(workdir / "media"),
+    }
+    count = 0
+    with tempconfig(options):
+        scene_cls.data = data
+        scene = scene_cls()
+
+        def keep(frame, num_frames=1):
+            nonlocal count
+            im = Image.fromarray(np.asarray(frame)[..., :3])
+            im = im.resize((width, height), Image.Resampling.LANCZOS)
+            for _ in range(num_frames):
+                im.save(workdir / f"{count:05d}.png", compress_level=1)
+                count += 1
+
+        scene.renderer.file_writer.write_frame = keep
+        scene.render()
+    return sorted(workdir.glob("*.png"))
 
 
-def cavity_axes(ax, title):
-    ax.set(xlim=(0, 1), ylim=(0, 1), aspect="equal", xlabel="x", ylabel="y")
-    ax.set_xticks([0, .5, 1], ["0", "0.5", "1"])
-    ax.set_yticks([0, .5, 1], ["0", "0.5", "1"])
-    ax.tick_params(length=3, labelsize=9)
-    ax.set_title(title, loc="left", fontsize=14, weight="bold", pad=27)
-    ax.annotate("", xy=(.97, 1.035), xytext=(.03, 1.035),
-                xycoords="axes fraction", arrowprops={"arrowstyle": "->", "color": "#71e2c3", "lw": 2})
-    ax.text(.5, 1.055, "moving lid  /  U = 1", transform=ax.transAxes,
-            ha="center", fontsize=8, color=MUTED)
+def save_video(paths, stem, poster_index):
+    """Encode frames as H.264 MP4, write a poster PNG, and check the decoded video."""
+    import av
+
+    first = Image.open(paths[0])
+    width, height = first.size
+    path = FIGS / f"{stem}.mp4"
+    with av.open(str(path), "w", options={"movflags": "+faststart"}) as box:
+        stream = box.add_stream("libx264", rate=Fraction(FPS))
+        stream.width, stream.height, stream.pix_fmt = width, height, "yuv420p"
+        stream.options = {"crf": str(CRF), "preset": "slow", "tune": "animation"}
+        for p in paths:
+            frame = av.VideoFrame.from_ndarray(np.asarray(Image.open(p).convert("RGB")), format="rgb24")
+            for packet in stream.encode(frame):
+                box.mux(packet)
+        for packet in stream.encode():
+            box.mux(packet)
+
+    # Decode the delivery file: every frame must be present, at the right size.
+    psnr = []
+    with av.open(str(path)) as box:
+        for k, frame in enumerate(box.decode(video=0)):
+            shown = frame.to_ndarray(format="rgb24").astype(float)
+            if shown.shape != (height, width, 3) or k >= len(paths):
+                raise RuntimeError(f"{path.name}: unexpected decoded frame {k} {shown.shape}")
+            reference = np.asarray(Image.open(paths[k]).convert("RGB"), dtype=float)
+            mse = np.mean((shown - reference) ** 2)
+            psnr.append(99.0 if mse == 0 else 10 * np.log10(255 ** 2 / mse))
+            if k in (0, len(paths) // 2, len(paths) - 1):
+                Image.fromarray(shown.astype(np.uint8)).save(QA / f"{stem}-decoded-{k:03}.png")
+    if len(psnr) != len(paths):
+        raise RuntimeError(f"{path.name}: decoded {len(psnr)} of {len(paths)} frames")
+
+    # Poster: one rendered frame in full colour (a palette would band the colour bars).
+    poster = FIGS / f"{stem}.png"
+    Image.open(paths[poster_index]).convert("RGB").save(poster, optimize=True)
+
+    size = path.stat().st_size
+    print(f"Wrote {path.name}: {len(paths)} frames, {width}×{height}, {size / 1e6:.2f} MB, "
+          f"PSNR mean {np.mean(psnr):.1f} dB / min {np.min(psnr):.1f} dB; "
+          f"poster {poster.stat().st_size / 1e3:.0f} kB", flush=True)
+    return {"file": str(path.relative_to(ROOT)), "poster": str(poster.relative_to(ROOT)),
+            "poster_frame": int(poster_index), "frames": len(paths), "fps": FPS,
+            "duration_s": round(len(paths) / FPS, 2), "size_bytes": size,
+            "width": width, "height": height, "renderer": f"manim {version('manim')} (Cairo)",
+            "supersampling": SUPERSAMPLE,
+            "codec": f"H.264 (libx264, crf {CRF}, preset slow, tune animation, yuv420p)",
+            "psnr_db_vs_rendered_frames": {"mean": round(float(np.mean(psnr)), 2),
+                                           "min": round(float(np.min(psnr)), 2)},
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "poster_sha256": hashlib.sha256(poster.read_bytes()).hexdigest()}
 
 
-def capture(fig):
-    fig.canvas.draw()
-    return Image.fromarray(np.asarray(fig.canvas.buffer_rgba())[..., :3].copy())
-
-
-def save_movie(frames, filename, duration=100):
-    """Use one palette throughout the loop to avoid per-frame colour flicker."""
-    width = 960
-    height = round(frames[0].height * width / frames[0].width)
-    frames = [im.resize((width, height), Image.Resampling.LANCZOS) for im in frames]
-    strip = Image.new("RGB", (320 * 8, 150))
-    for j, k in enumerate(np.linspace(0, len(frames) - 1, 8, dtype=int)):
-        small = frames[k].resize((320, 150))
-        strip.paste(small, (320 * j, 0))
-    palette = strip.quantize(colors=128)
-    indexed = [im.quantize(palette=palette, dither=Image.Dither.NONE) for im in frames]
-    path = FIGS / filename
-    indexed[0].save(path, save_all=True, append_images=indexed[1:],
-                    duration=duration, loop=0, optimize=True, disposal=1)
-    # Reopen the delivery file to check frame count and review actual GIF colours.
-    with Image.open(path) as gif:
-        if gif.n_frames != len(frames):
-            raise RuntimeError(f"{filename}: unexpected frame count {gif.n_frames}")
-        for k in (0, len(frames) // 3, 2 * len(frames) // 3, len(frames) - 1):
-            gif.seek(k)
-            gif.convert("RGB").save(QA / f"{path.stem}-{k:03}.png")
-    print(f"Wrote {filename}: {len(frames)} frames, {path.stat().st_size / 1e6:.2f} MB", flush=True)
-    return {"file": str(path.relative_to(ROOT)), "frames": len(frames),
-            "duration_ms_per_frame": duration, "size_bytes": path.stat().st_size,
-            "width": width, "height": height, "palette_colours": 128,
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
-
-
-def trajectories(case, seed, frames=81, frame_dt=.2, substeps=160):
+def trajectories(case, seed, frames, frame_dt, substeps):
     g = case["g"]
     streamfunction = RectBivariateSpline(g.x, g.y, case["p"], kx=3, ky=3, s=0)
 
@@ -120,132 +153,109 @@ def trajectories(case, seed, frames=81, frame_dt=.2, substeps=160):
 
 
 def particle_movie():
+    from manim_scenes import SPEED, TracerScene, rgba
+    from matplotlib.colors import Normalize
+
+    frame_dt, tracer_dt, n_frames, trail_frames, fade_frames = .1, .00125, 161, 12, 6
+    if PREVIEW:
+        n_frames = 31
+    substeps = round(frame_dt / tracer_dt)
     rng = np.random.default_rng(2026)
-    xx, yy = np.meshgrid(np.linspace(.035, .965, 16), np.linspace(.035, .965, 16))
-    seed = np.column_stack((xx.ravel(), yy.ravel())) + rng.uniform(-.016, .016, (256, 2))
-    fig = plt.figure(figsize=(13, 6.4), dpi=100)
-    fig.text(.045, .957, "NAVIER-STOKES  /  LID-DRIVEN CAVITY", fontsize=10, color="#70d6c0", weight="bold")
-    fig.text(.045, .894, "Fluid motion inside the cavity", fontsize=23, weight="bold")
-    fig.text(.955, .90, "257 × 257 grids", fontsize=10, color=MUTED, ha="right")
-    movies, heads, trails, records = [], [], [], []
-    norm = Normalize(0, 1)
-    for j, re in enumerate((400, 1000, 3200)):
+    xx, yy = np.meshgrid(np.linspace(.035, .965, 20), np.linspace(.035, .965, 20))
+    seed = np.column_stack((xx.ravel(), yy.ravel())) + rng.uniform(-.012, .012, (400, 2))
+    panels, records = [], []
+    for re in (400, 1000, 3200):
         row, case = audit_case(f"Re{re}_N257")
-        path, speed = trajectories(case, seed)
+        path, speed = trajectories(case, seed, n_frames, frame_dt, substeps)
         # Measure integration sensitivity on exactly the particles shown.
-        refined, _ = trajectories(case, seed, substeps=320)
-        difference = np.linalg.norm(path - refined, axis=-1)
-        error = float(np.max(difference))
+        refined, _ = trajectories(case, seed, n_frames, frame_dt, 2 * substeps)
+        error = float(np.max(np.linalg.norm(path - refined, axis=-1)))
         if error > case["g"].h / 10:
             raise RuntimeError(f"Re {re}: tracer-step sensitivity too large: {error}")
-        movies.append((path, speed))
         records.append({"case": row["name"], "cache_sha256": row["cache_sha256"],
                         "max_position_change_when_tracer_step_halved": error})
-        ax = fig.add_axes([.048 + j * .317, .24, .268, .54])
-        cavity_axes(ax, f"Re = {re}")
-        ax.imshow(np.hypot(case["u"], case["v"]).T, origin="lower", extent=(0, 1, 0, 1),
-                  cmap=SPEED, norm=norm, alpha=.40, interpolation="bilinear")
-        ax.contour(case["g"].x, case["g"].y, case["p"].T,
-                   levels=np.linspace(float(case["p"].min()) * .95, -.001, 11),
-                   colors="#bfd8df", linewidths=.35, alpha=.17)
-        trail = LineCollection([], linewidths=.9)
-        ax.add_collection(trail)
-        heads.append(ax.scatter([], [], s=6, edgecolors="none", zorder=4))
-        trails.append(trail)
-    cax = fig.add_axes([.07, .105, .245, .014])
-    cb = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=TRACER), cax=cax,
-                      orientation="horizontal", ticks=[0, .5, 1])
-    cb.ax.tick_params(labelsize=8, length=2)
-    cb.set_label("Particle speed / lid speed", fontsize=9, labelpad=3)
-    clock = fig.text(.954, .115, "", ha="right", fontsize=12)
-    fig.text(.405, .080, "Passive tracers in converged, steady velocity fields", fontsize=10, color=MUTED)
-    fig.text(.405, .042, "Same physical clock in all panels • particle positions reset when the GIF loops", fontsize=8, color=MUTED)
-    frames = []
-    for i in range(len(movies[0][0])):
-        for (path, speed), head, trail in zip(movies, heads, trails):
-            first = max(0, i - 6)
-            points = path[first:i + 1]
-            segments = np.stack((points[:-1], points[1:]), axis=-2).reshape(-1, 2, 2)
-            colors = TRACER(norm(speed[first + 1:i + 1])).reshape(-1, 4)
-            if i > first:
-                colors[:, 3] = np.repeat(np.linspace(.08, .8, i - first), len(seed))
-            trail.set_segments(segments)
-            trail.set_color(colors)
-            head.set_offsets(path[i])
-            head.set_color(TRACER(norm(speed[i])))
-        clock.set_text(f"Tracer time  τ = {i * .2:4.1f} L/U")
-        frames.append(capture(fig))
-    result = save_movie(frames, "cavity_particles.gif")
-    plt.close(fig)
+        g = case["g"]
+        panels.append({
+            "Re": re, "path": path, "speed": speed, "x": g.x, "y": g.y, "psi": case["p"],
+            "levels": np.linspace(float(case["p"].min()) * .95, -.001, 11),
+            "background": rgba(np.hypot(case["u"], case["v"]), SPEED, Normalize(0, 1), alpha=.45),
+        })
+    data = {"panels": panels, "fps": FPS, "frames": n_frames, "frame_dt": frame_dt,
+            "trail_frames": trail_frames, "trail_length": trail_frames * frame_dt,
+            "fade_frames": fade_frames, "particles": len(seed)}
+    paths = render(TracerScene, data, 1440, 720, QA / "frames_particles")
+    if PREVIEW:
+        return None
+    # Poster: tracers fully faded in, trails long, about 60 % through the loop.
+    result = save_video(paths, "cavity_particles", poster_index=int(.6 * len(paths)))
     return {**result, "meaning": "RK4 passive tracers in frozen steady fields; velocity is the rotated gradient of a bicubic streamfunction interpolant",
-            "seed": 2026, "particles_per_panel": len(seed), "frame_dt": .2,
-            "tracer_dt": .00125, "tracer_time_interval": [0, 16], "inputs": records}
+            "seed": 2026, "particles_per_panel": len(seed), "frame_dt": frame_dt,
+            "tracer_dt": tracer_dt, "tracer_time_interval": [0, (n_frames - 1) * frame_dt],
+            "trail_length": trail_frames * frame_dt, "loop_fade_frames": fade_frames,
+            "inputs": records}
 
 
 def startup_movie():
+    from manim_scenes import StartupScene
+
     row, case = audit_case("Re400_N129")
     fields, g = case["fields"], case["g"]
     times = fields["hist_t"]
-    fig = plt.figure(figsize=(11.2, 7.1), dpi=100)
-    fig.text(.065, .945, "STARTING FROM REST  /  Re = 400", fontsize=10, color="#70d6c0", weight="bold")
-    fig.text(.065, .883, "The moving lid sets the fluid in motion", fontsize=21, weight="bold")
-    axes = [fig.add_axes([left, .22, .36, .565]) for left in (.075, .565)]
-    images, contours = [], [None, None]
-    for ax, title, cmap, lo, hi in zip(axes, ("Speed and instantaneous streamlines", "Vorticity"),
-                                      (SPEED, VORTICITY), (0, -20), (1, 20)):
-        cavity_axes(ax, title)
-        ax.title.set_fontsize(12)
-        images.append(ax.imshow(np.zeros(g.shape).T, origin="lower", extent=(0, 1, 0, 1),
-                                cmap=cmap, vmin=lo, vmax=hi, interpolation="bilinear"))
-    for left, im, label, ticks in zip((.12, .61), images,
-            ("Speed / lid speed", "Vorticity ω  /  colour clipped at ±20"), ([0, .5, 1], [-20, 0, 20])):
-        cb = fig.colorbar(im, cax=fig.add_axes([left, .13, .27, .016]), orientation="horizontal", ticks=ticks)
-        cb.ax.tick_params(length=2, labelsize=9)
-        cb.set_label(label, fontsize=9)
-    clock = fig.text(.935, .94, "", ha="right", fontsize=12)
-    fig.text(.065, .035, "129 × 129 grid • first 20 lid-travel times • linear display interpolation between recorded snapshots",
-             fontsize=9, color=MUTED)
-    levels = np.array([-.11, -.10, -.08, -.06, -.04, -.02, -.01, -.003])
-    frames = []
-    display_times = np.linspace(0, 20, 129)
-    for t in display_times:
+    t_end, n_frames = 20.0, 161
+    if PREVIEW:
+        t_end, n_frames = 5.0, 21
+    display = np.linspace(0, t_end, n_frames)
+    speeds, omegas, psis = [], [], []
+    for t in display:
         right = min(int(np.searchsorted(times, t, side="right")), len(times) - 1)
         left = right - 1
         weight = (t - times[left]) / (times[right] - times[left])
         psi = (1 - weight) * fields["hist_psi"][left] + weight * fields["hist_psi"][right]
         omega = (1 - weight) * fields["hist_omega"][left] + weight * fields["hist_omega"][right]
         u, v = pp.velocity_from_psi(psi, g, WallVelocities(top=1.0))
-        images[0].set_data(np.hypot(u, v).T)
-        images[1].set_data(omega.T)
-        for contour in contours:
-            if contour is not None:
-                contour.remove()
-        available = levels[(levels > psi.min()) & (levels < psi.max())]
-        contours = [ax.contour(g.x, g.y, psi.T, levels=available,
-                     colors="#e6f3f3", linewidths=.65, alpha=.5)
-                    if len(available) else None for ax in axes]
-        clock.set_text(f"Simulation time  t = {t:5.2f} L/U")
-        frames.append(capture(fig))
-    result = save_movie(frames, "cavity_startup.gif", duration=80)
-    plt.close(fig)
-    return {**result, "meaning": "Transient fields, linearly interpolated in time for display only",
+        speeds.append(np.hypot(u, v))
+        omegas.append(omega)
+        psis.append(psi)
+    t_e, energy = fields["residual_times"], fields["kinetic_energy"]
+    keep = t_e <= t_end
+    data = {
+        "fps": FPS, "frames": n_frames, "times": display, "t_end": t_end,
+        "x": g.x, "y": g.y, "speed": speeds, "omega": omegas, "psi": psis,
+        "levels": np.array([-.11, -.10, -.08, -.06, -.04, -.02, -.01, -.003]),
+        "energy_t": np.concatenate(([0.0], t_e[keep])),
+        "energy": np.concatenate(([0.0], energy[keep])),
+        "energy_final": float(energy[-1]), "t_steady": float(t_e[-1]),
+    }
+    paths = render(StartupScene, data, 1280, 1024, QA / "frames_startup")
+    if PREVIEW:
+        return None
+    # Poster: the last frame, with the whole energy curve drawn up to t = 20.
+    result = save_video(paths, "cavity_startup", poster_index=len(paths) - 1)
+    return {**result, "meaning": "Transient fields, linearly interpolated in time for display only; energy curve uses recorded solver diagnostics",
             "case": row["name"], "cache_sha256": row["cache_sha256"],
-            "simulation_time_interval": [0, 20], "snapshot_spacing": .625,
-            "vorticity_colour_limits": [-20, 20]}
+            "simulation_time_interval": [0, t_end], "snapshot_spacing": float(times[1] - times[0]),
+            "display_time_step": t_end / (n_frames - 1), "vorticity_colour_limits": [-20, 20]}
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--only", choices=("particles", "startup"))
+    ap.add_argument("--preview", action="store_true",
+                    help="render short 1x sequences to tmp/animation_review only")
     args = ap.parse_args()
-    theme()
+    global PREVIEW
+    PREVIEW = args.preview
     QA.mkdir(parents=True, exist_ok=True)
     path = ROOT / "data/animations.json"
     evidence = json.loads(path.read_text()) if path.exists() else {}
+    builders = Path(__file__).read_bytes() + (Path(__file__).parent / "manim_scenes.py").read_bytes()
     for name, builder in (("particles", particle_movie), ("startup", startup_movie)):
         if args.only is None or args.only == name:
-            evidence[name] = builder()
-            evidence[name]["builder_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+            record = builder()
+            if record is None:
+                continue
+            evidence[name] = record
+            evidence[name]["builder_sha256"] = hashlib.sha256(builders).hexdigest()
             path.write_text(json.dumps(evidence, indent=2) + "\n")
 
 

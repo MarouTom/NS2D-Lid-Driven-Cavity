@@ -1,5 +1,13 @@
 # Changelog
 
+## Manim animations and README refresh
+
+- Redraw both README animations with Manim: titled scenes, lid arrows, labelled colour bars, glowing tracer heads with fading trails, and a kinetic-energy timeline under the startup fields.
+- Replace the README GIFs with full-colour H.264 MP4s and poster frames: rendered at twice the delivered resolution (1440 and 1280 px wide), 20 fps, and decoded after writing with per-frame PSNR recorded. An equivalent GIF of the tracer scene would have been about 47 MB.
+- Use perceptually ordered colour maps: monotone-lightness speed, symmetric dark-centred diverging vorticity.
+- Expand the README with an at-a-glance panel, gallery, convergence-order table, nondimensionalisation map, scientific acceptance checklist and figure-encoding notes.
+- Add an optional `animation` dependency group and a `--preview` mode for quick layout checks.
+
 ## Review corrections
 
 - Run the spatial, asymmetric and joint manufactured-solution studies to T = 0.5, so that wall-generated vorticity reaches the interior; at T = 0.005 the streamfunction error was almost entirely the Poisson error of the initial vorticity.
