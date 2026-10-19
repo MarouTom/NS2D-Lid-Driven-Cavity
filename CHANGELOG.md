@@ -1,5 +1,12 @@
 # Changelog
 
+## Publication-quality static figures
+
+- Redraw every report and README figure at its printed size (165 mm) with 8–9 pt Times New Roman, panel letters, embedded fonts and 300 dpi PNG copies.
+- Replace the Reynolds-number palette, whose Re = 400 and 1000 colours differed by only 2.7 L* in greyscale, with an audited high-contrast set (`#004488`, `#AA4455`, `#B8860B`) plus per-Re markers.
+- Print observed convergence orders in the verification and accuracy figures, label grid spacings as 1/N, and mark negative streamfunction contours as dashed.
+- Update report captions to match, rebuild the PDF and re-execute the notebook.
+
 ## Manim animations and README refresh
 
 - Redraw both README animations with Manim: titled scenes, lid arrows, labelled colour bars, glowing tracer heads with fading trails, and a kinetic-energy timeline under the startup fields.

@@ -270,11 +270,15 @@ All plots and animations are generated from the audited data in `data/`. None is
 
 | Encoding | Choice | Why |
 |---|---|---|
-| Speed | Sequential map, lightness rising monotonically (CIE L\* ≈ 10 → 97) | Faster flow always reads as brighter, including in greyscale |
-| Vorticity | Diverging map centred on zero, symmetric limits, explicitly saturated | Sign is a hue; magnitude is lightness; the singular corners would otherwise flatten the interior |
+| Reynolds number | `#004488` ● Re 400 · `#AA4455` ■ Re 1000 · `#B8860B` ▲ Re 3200 (from Paul Tol's high-contrast scheme) | Each colour ≥ 3:1 on white and ≥ 14 L\* apart in greyscale; lightness rises with Re; marker shape repeats the cue |
+| Grid level | Dotted, dashed, solid from coarse to fine | Refinement stays readable without colour |
+| Speed | `viridis` in static figures; a sequential map with monotone lightness (CIE L\* ≈ 10 → 97) in the animations | Faster flow always reads as brighter, including in greyscale |
+| Vorticity | Diverging map (`RdBu_r` in print) centred on zero, symmetric limits, explicitly saturated; negative ψ contours dashed | Sign is a hue; magnitude is lightness; the singular corners would otherwise flatten the interior |
 | Streamlines | Contours of ψ, drawn over colour | A second, colour-independent cue for the flow direction |
 | Tracers | RK4 paths in frozen steady fields, halved-step check < h/10 | Shows the motion of fluid without implying unsteadiness |
 | Transients | Linear display interpolation between saved snapshots | Smooth playback only; stated on every frame |
+
+Static figures are drawn at their printed size (165 mm, the report's text width) in Times New Roman at 8-9 pt, so labels in the PDF match the body text. Panels carry letters that the captions refer to, observed convergence orders are printed in the legends, and fonts are embedded in the vector PDFs; PNG copies are exported at 300 dpi. Colour choices were checked with the WCAG contrast and greyscale audit from the scientific-visualization toolkit.
 
 The animations are rendered with **Manim** at twice their delivered resolution, downsampled, and encoded as full-colour H.264 MP4s, a fraction of the size of an equivalent GIF. Each video is decoded after writing, and its frame count and PSNR against the rendered frames are recorded. The README shows a still poster frame from each video. The details are in [docs/animations.md](docs/animations.md).
 

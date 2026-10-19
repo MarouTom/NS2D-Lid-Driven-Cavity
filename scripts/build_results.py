@@ -37,12 +37,21 @@ from run_production import CASES as PRODUCTION_CASES, kernel_fingerprint
 from run_accuracy import analysis_fingerprint
 
 DATA, FIGS = ROOT / "data", ROOT / "figures"
-TEAL, ORANGE, BLUE = "#007f83", "#cf703b", "#486ca3"
-COLORS = {400: TEAL, 1000: BLUE, 3200: ORANGE}
+# One colour, marker and line style per Reynolds number. Derived from Paul Tol's
+# high-contrast scheme with the gold darkened: every colour reaches 3:1 against
+# white, greyscale separation is at least 14 L* units, and lightness rises with Re
+# so the colour order matches the physical order. Markers repeat the distinction.
+COLORS = {400: "#004488", 1000: "#AA4455", 3200: "#B8860B"}
+MARKERS = {400: "o", 1000: "s", 3200: "^"}
+INK, MUTED, GUIDE, REF = "#1d2a33", "#56646c", "#8a979e", "#333333"
+# Two-series comparisons (Okabe-Ito blue and vermillion, both >= 3:1 on white).
+PAIR = ("#0072B2", "#D55E00")
+TEXT_WIDTH = 165 / 25.4   # report text width (A4, 2.25 cm margins), inches
 CASES = list(PRODUCTION_CASES)
 
 
 def style():
+    """Figures are drawn at their printed size, so 8-9 pt here is 8-9 pt in the report."""
     plt.rcParams.update(
         {
             "font.family": "Times New Roman",
@@ -51,28 +60,61 @@ def style():
             "mathtext.it": "Times New Roman:italic",
             "mathtext.bf": "Times New Roman:bold",
             "mathtext.fallback": "stix",
-            "font.size": 12,
-            "axes.titlesize": 14,
+            "font.size": 9,
+            "axes.titlesize": 9.5,
             "axes.titleweight": "bold",
-            "axes.labelcolor": "#263d4b",
-            "text.color": "#172f3e",
+            "axes.titlelocation": "left",
+            "axes.labelsize": 9,
+            "axes.labelcolor": INK,
+            "axes.linewidth": 0.6,
+            "axes.edgecolor": "#9aa7ad",
             "axes.spines.top": False,
             "axes.spines.right": False,
-            "axes.edgecolor": "#b8c6cc",
             "axes.grid": False,
+            "grid.color": "#d9dfe2",
+            "grid.linewidth": 0.5,
+            "xtick.labelsize": 8,
+            "ytick.labelsize": 8,
+            "xtick.color": MUTED,
+            "ytick.color": MUTED,
+            "xtick.major.width": 0.6,
+            "ytick.major.width": 0.6,
+            "xtick.major.size": 2.5,
+            "ytick.major.size": 2.5,
+            "lines.linewidth": 1.3,
+            "lines.markersize": 4,
+            "legend.fontsize": 7.5,
+            "legend.frameon": False,
+            "legend.handlelength": 2.2,
+            "text.color": INK,
             "figure.facecolor": "white",
             "savefig.facecolor": "white",
-            "savefig.dpi": 180,
-            "legend.frameon": False,
+            "savefig.dpi": 300,
+            "figure.constrained_layout.h_pad": 0.04,
+            "figure.constrained_layout.w_pad": 0.04,
             "pdf.fonttype": 42,
             "svg.fonttype": "none",
         }
     )
 
 
+def panel_titles(axs, titles, **kw):
+    """Left-aligned titles with panel letters, so captions can refer to (a), (b), ..."""
+    for k, (ax, title) in enumerate(zip(np.ravel(axs), titles)):
+        ax.set_title(f"({chr(97 + k)})  {title}", **kw)
+
+
+def slope_label(ax, x, y, text, color=GUIDE, **kw):
+    """Label a reference-slope guide just below the point (x, y) on it."""
+    ax.annotate(text, (x, y), textcoords="offset points", xytext=(2, -11),
+                fontsize=7.5, color=color, **kw)
+
+
 def savefig(fig, name):
-    fig.savefig(FIGS / f"{name}.png", bbox_inches="tight")
-    fig.savefig(FIGS / f"{name}.pdf", bbox_inches="tight")
+    """Write PDF (vector, for the report) and 300 dpi PNG at the figure's exact size."""
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"{name}.{ext}", metadata={"Creator": "scripts/build_results.py"}
+                    if ext == "pdf" else None)
     plt.close(fig)
 
 
@@ -239,119 +281,97 @@ def verification():
 
 def verification_figure(ver):
     """Spatial, temporal and local-wall convergence panels (figures/verification)."""
-    fig, axs = plt.subplots(1, 3, figsize=(10.5, 4), layout="constrained")
-    for name, lab, color in (
-        ("spatial_exact", "Exact wall vorticity", BLUE),
-        ("spatial_thom", "Thom wall vorticity", TEAL),
+    fig, axs = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 2.45), layout="constrained")
+    for (name, lab), color, marker, ls in zip(
+        (("spatial_exact", "Exact $\\omega_w$"), ("spatial_thom", "Thom $\\omega_w$")),
+        PAIR, ("o", "s"), ("-", "--"),
     ):
         es = ver[name]["errors"]
         h = np.array([e["h"] for e in es])
         err = [e["psi_l2"] for e in es]
-        axs[0].loglog(h, err, "o-", color=color, label=lab)
-    axs[0].loglog(h, err[-1] * (h / h[-1]) ** 2, ":", color="#8b969a", label="Slope 2")
+        p = ver[name]["orders"]["psi_l2"][-1]
+        axs[0].loglog(h, err, marker=marker, ls=ls, color=color, mfc="white",
+                      label=f"{lab}, $p$ = {p:.2f}")
+    axs[0].loglog(h, err[-1] * (h / h[-1]) ** 2 * 0.55, ":", color=GUIDE, lw=1)
+    slope_label(axs[0], h[-2], err[-1] * (h[-2] / h[-1]) ** 2 * 0.55, "slope 2")
     es = ver["temporal"]["errors"]
     dt = np.array([e["dt"] for e in es])
     err = np.array([e["psi_l2"] for e in es])
-    axs[1].loglog(dt, err, "o-", color=ORANGE, label=r"$\psi$, same-grid reference")
-    axs[1].loglog(dt, err[-1] * dt / dt[-1], ":", color="#8b969a", label="Slope 1")
+    p = ver["temporal"]["orders"]["psi_l2"][-1]
+    axs[1].loglog(dt, err, "o-", color=PAIR[0], mfc="white", label=f"$\\psi$, $p$ = {p:.2f}")
+    axs[1].loglog(dt, err[-1] * dt / dt[-1] * 0.6, ":", color=GUIDE, lw=1)
+    slope_label(axs[1], dt[-2], err[-1] * dt[-2] / dt[-1] * 0.6, "slope 1")
     wall = ver["wall"]
     h = np.array([e["h"] for e in wall])
     err = np.array([e["max_error"] for e in wall])
-    axs[2].loglog(h, err, "o-", color=BLUE, label="Local Thom error")
-    axs[2].loglog(h, err[-1] * h / h[-1], ":", color="#8b969a", label="Slope 1")
-    for ax, title, xlabel, ylabel in zip(
+    axs[2].loglog(h, err, "D-", color=PAIR[1], mfc="white", ms=3.5, label="Local Thom error")
+    axs[2].loglog(h, err[-1] * h / h[-1] * 0.6, ":", color=GUIDE, lw=1)
+    slope_label(axs[2], h[-2], err[-1] * h[-2] / h[-1] * 0.6, "slope 1")
+    panel_titles(axs, ("Space: streamfunction", "Time: self-convergence", "Local wall error"))
+    for ax, xlabel, ylabel in zip(
         axs,
-        ("Space: streamfunction", "Time: self-convergence", "Local wall error"),
-        ("Grid spacing h", "Time step Δt", "Grid spacing h"),
-        (r"$L^2$ error", r"$L^2$ difference", "Maximum error"),
+        ("Grid spacing $h$", r"Time step $\Delta t$ ($\times 10^{-4}$)", "Grid spacing $h$"),
+        (r"$L^2$ error in $\psi$", r"$L^2$ difference in $\psi$", "Maximum wall error"),
     ):
-        ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
-        ax.grid(alpha=0.2, which="both")
-        ax.legend(fontsize=9)
+        ax.set(xlabel=xlabel, ylabel=ylabel)
+        ax.grid(which="major")
+        ax.legend(loc="upper left")
         ax.xaxis.set_minor_formatter(NullFormatter())
-        ax.tick_params(axis="x", labelsize=9)
     for ax in (axs[0], axs[2]):
-        ax.set_xticks(
-            [1 / 128, 1 / 64, 1 / 32, 1 / 16], ["1/128", "1/64", "1/32", "1/16"]
-        )
+        ax.set_xticks([1 / 128, 1 / 64, 1 / 32, 1 / 16], ["1/128", "1/64", "1/32", "1/16"])
     axs[1].set_xticks([4e-5, 8e-5, 1.6e-4, 3.2e-4], ["0.4", "0.8", "1.6", "3.2"])
-    axs[1].set_xlabel(r"Time step $\Delta t$ ($\times 10^{-4}$)")
     savefig(fig, "verification")
+
+
+def lid_arrow(ax, color):
+    ax.annotate("", xy=(0.95, 1.035), xytext=(0.05, 1.035), xycoords="axes fraction",
+                arrowprops={"arrowstyle": "-|>,head_width=0.18,head_length=0.45",
+                            "color": color, "lw": 1.4}, annotation_clip=False)
 
 
 def figures(rows, cases, ver):
     # Three Reynolds numbers with one common speed scale.
-    fig, axs = plt.subplots(1, 3, figsize=(11.5, 4.2))
-    fig.subplots_adjust(left=0.055, right=0.885, bottom=0.13, top=0.80, wspace=0.22)
+    fig, axs = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 2.35), layout="constrained")
+    norm = Normalize(0, 1)
     for ax, re in zip(axs, (400, 1000, 3200)):
         c = cases[f"Re{re}_N257"]
         g = c["g"]
-        speed = np.hypot(c["u"], c["v"])
-        ax.imshow(
-            speed.T,
-            extent=(0, 1, 0, 1),
-            origin="lower",
-            cmap="viridis",
-            norm=Normalize(0, 1),
-        )
-        ax.streamplot(
-            g.x,
-            g.y,
-            c["u"].T,
-            c["v"].T,
-            color="#f2f8f5",
-            linewidth=0.52,
-            density=1.55,
-            arrowsize=0.65,
-        )
-        ax.annotate(
-            "",
-            xy=(0.94, 1.035),
-            xytext=(0.05, 1.035),
-            arrowprops={"arrowstyle": "->", "color": COLORS[re], "lw": 2.3},
-            annotation_clip=False,
-        )
-        ax.set_title(f"Re = {re}", pad=20, color=COLORS[re])
-        ax.set(xlabel="x", ylabel="y", aspect="equal", xlim=(0, 1), ylim=(0, 1))
+        ax.imshow(np.hypot(c["u"], c["v"]).T, extent=(0, 1, 0, 1), origin="lower",
+                  cmap="viridis", norm=norm, interpolation="bilinear")
+        ax.streamplot(g.x, g.y, c["u"].T, c["v"].T, color="#f4f8f6", linewidth=0.38,
+                      density=1.15, arrowsize=0.45)
+        lid_arrow(ax, COLORS[re])
+        ax.set(xlabel="$x$", ylabel="$y$", aspect="equal", xlim=(0, 1), ylim=(0, 1))
         ax.set_xticks((0, 0.5, 1))
         ax.set_yticks((0, 0.5, 1))
-    cb = fig.colorbar(
-        plt.cm.ScalarMappable(norm=Normalize(0, 1), cmap="viridis"),
-        cax=fig.add_axes([0.916, 0.20, 0.014, 0.56]),
-    )
-    cb.set_label("Speed / lid speed")
-    fig.suptitle(
-        "THE FLOW CHANGES WITH REYNOLDS NUMBER", fontsize=16, fontweight="bold"
-    )
+    panel_titles(axs, [f"Re = {re}" for re in (400, 1000, 3200)], pad=13)
+    cb = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap="viridis"), ax=axs,
+                      shrink=0.82, pad=0.015, aspect=22)
+    cb.set_label(r"Speed $|\mathbf{u}|/U$")
+    cb.outline.set_linewidth(0.5)
     savefig(fig, "flow_atlas")
 
-    fig, axs = plt.subplots(1, 3, figsize=(10, 3.9), layout="constrained")
+    fig, axs = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 2.25), layout="constrained")
     for ax, re in zip(axs, (400, 1000, 3200)):
         c = cases[f"Re{re}_N257"]
         g = c["g"]
-        im = ax.contourf(
-            g.x,
-            g.y,
-            c["w"].T,
-            levels=np.linspace(-20, 20, 41),
-            cmap="RdBu_r",
-            extend="both",
-        )
-        ax.contour(
-            g.x,
-            g.y,
-            c["p"].T,
-            levels=[-0.115, -0.10, -0.07, -0.04, -0.01, 0, 0.0001, 0.0005, 0.001],
-            colors="#183846",
-            linewidths=0.55,
-        )
-        ax.set(title=f"Re = {re}", xlabel="x", ylabel="y", aspect="equal")
-    fig.colorbar(
-        im, ax=axs, shrink=0.8, label=r"Vorticity $\omega$; saturated beyond $\pm20$"
-    )
+        im = ax.contourf(g.x, g.y, c["w"].T, levels=np.linspace(-20, 20, 41),
+                         cmap="RdBu_r", extend="both")
+        # Negative (clockwise) streamfunction levels are drawn dashed, positive solid.
+        ax.contour(g.x, g.y, c["p"].T,
+                   levels=[-0.115, -0.10, -0.07, -0.04, -0.01, 0, 0.0001, 0.0005, 0.001],
+                   colors=INK, linewidths=0.45)
+        ax.set(xlabel="$x$", ylabel="$y$", aspect="equal")
+        ax.set_xticks((0, 0.5, 1))
+        ax.set_yticks((0, 0.5, 1))
+    panel_titles(axs, [f"Re = {re}" for re in (400, 1000, 3200)])
+    cb = fig.colorbar(im, ax=axs, shrink=0.82, pad=0.015, aspect=22, ticks=[-20, -10, 0, 10, 20])
+    cb.set_label(r"Vorticity $\omega$ ($U/L$), saturated beyond $\pm 20$")
+    cb.outline.set_linewidth(0.5)
     savefig(fig, "vorticity")
 
-    fig, axs = plt.subplots(3, 2, figsize=(8.8, 10.5), layout="constrained")
+    fig, axs = plt.subplots(3, 2, figsize=(TEXT_WIDTH, 7.6), layout="constrained")
+    titles = []
     for axes, re in zip(axs, (400, 1000, 3200)):
         sizes = ((65, ":"), (129, "--"), (257, "-")) if re != 3200 else ((129, ":"), (193, "--"), (257, "-"))
         for n, ls in sizes:
@@ -360,115 +380,68 @@ def figures(rows, cases, ver):
                 continue
             c = cases[name]
             g = c["g"]
-            axes[0].plot(
-                pp.centerline_u(c["u"], g),
-                g.y,
-                ls,
-                color=COLORS[re],
-                lw=1.5,
-                label=f"Present, {n}²",
-            )
-            axes[1].plot(
-                g.x,
-                pp.centerline_v(c["v"], g),
-                ls,
-                color=COLORS[re],
-                lw=1.5,
-                label=f"Present, {n}²",
-            )
+            axes[0].plot(pp.centerline_u(c["u"], g), g.y, ls, color=COLORS[re], lw=1.2,
+                         label=f"Present, {n}²")
+            axes[1].plot(g.x, pp.centerline_v(c["v"], g), ls, color=COLORS[re], lw=1.2,
+                         label=f"Present, {n}²")
         c = cases[f"Re{re}_N257"]
         comp = c["cmp"]
-        axes[0].plot(
-            comp.u_ref,
-            comp.y,
-            "o",
-            mfc="white",
-            mec="#263d4b",
-            ms=4,
-            label="Ghia (1982)",
-        )
-        axes[1].plot(
-            comp.x,
-            comp.v_ref,
-            "o",
-            mfc="white",
-            mec="#263d4b",
-            ms=4,
-            label="Ghia (1982)",
-        )
+        ghia = {"mfc": "white", "mec": REF, "mew": 0.8, "ms": 3.6, "ls": "none",
+                "label": "Ghia et al. (1982)"}
+        axes[0].plot(comp.u_ref, comp.y, "o", **ghia)
+        axes[1].plot(comp.x, comp.v_ref, "o", **ghia)
+        flagged = {"color": "black", "ms": 7, "mew": 1.4, "ls": "none", "label": "Flagged, retained"}
         for ys in comp.flagged_u_y:
             k = np.argmin(abs(comp.y - ys))
-            axes[0].plot(
-                comp.u_ref[k],
-                ys,
-                "x",
-                color="#c84246",
-                ms=9,
-                mew=2,
-                label="Flagged, retained",
-            )
+            axes[0].plot(comp.u_ref[k], ys, "x", **flagged)
         for xs in comp.flagged_v_x:
             k = np.argmin(abs(comp.x - xs))
-            axes[1].plot(
-                xs,
-                comp.v_ref[k],
-                "x",
-                color="#c84246",
-                ms=9,
-                mew=2,
-                label="Flagged, retained",
-            )
+            axes[1].plot(xs, comp.v_ref[k], "x", **flagged)
         if re == 1000:
             bc = bm.compare_to_botella(c["u"], c["v"], c["g"])
-            axes[0].plot(
-                bc.u_ref, bc.y, "+", color=ORANGE, ms=7, label="Botella & Peyret (1998)"
-            )
-            axes[1].plot(
-                bc.x, bc.v_ref, "+", color=ORANGE, ms=7, label="Botella & Peyret (1998)"
-            )
-        axes[0].set(
-            title=f"Re = {re}  |  vertical centerline", xlabel="u(0.5, y)", ylabel="y"
-        )
-        axes[1].set(
-            title=f"Re = {re}  |  horizontal centerline", xlabel="x", ylabel="v(x, 0.5)"
-        )
+            botella = {"mfc": "none", "mec": "#6f7b82", "mew": 0.8, "ms": 4, "ls": "none",
+                       "label": "Botella & Peyret (1998)"}
+            axes[0].plot(bc.u_ref, bc.y, "D", **botella)
+            axes[1].plot(bc.x, bc.v_ref, "D", **botella)
+        axes[0].set(xlabel="$u(0.5, y)/U$", ylabel="$y$")
+        axes[1].set(xlabel="$x$", ylabel="$v(x, 0.5)/U$")
+        titles += [f"Re = {re}: vertical centreline", f"Re = {re}: horizontal centreline"]
         for ax in axes:
-            ax.grid(alpha=0.18)
-            ax.legend(fontsize=9, loc="best")
+            ax.grid()
+            ax.axhline(0, color=GUIDE, lw=0.5, zorder=0) if ax is axes[1] else ax.axvline(0, color=GUIDE, lw=0.5, zorder=0)
+            ax.legend(loc="best")
+    panel_titles(axs, titles)
     savefig(fig, "centerlines")
 
-    fig, axs = plt.subplots(1, 2, figsize=(10, 4), layout="constrained")
+    fig, axs = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 2.55), layout="constrained")
     for row in rows:
         if row["N"] not in (129, 257):
             continue
         d = cases[row["name"]]["fields"]
-        color = COLORS[row["Re"]]
+        re = row["Re"]
         ls = "--" if row["N"] == 129 else "-"
-        axs[0].semilogy(
-            d["residual_times"],
-            d["residuals"],
-            ls,
-            color=color,
-            label=f"Re {row['Re']}, {row['N']}²",
-        )
-        axs[1].plot(d["residual_times"], d["kinetic_energy"], ls, color=color)
-    axs[0].axhline(1e-6, color="#607783", ls=":", label="Stopping threshold")
-    axs[0].set(
-        xlabel="Dimensionless time",
-        ylabel=r"$\|\omega^{n+1}-\omega^n\|_\infty/\Delta t$",
-        title="Steady convergence",
-    )
-    axs[1].set(
-        xlabel="Dimensionless time", ylabel="Kinetic energy", title="Kinetic energy"
-    )
-    axs[0].legend(fontsize=9, ncol=2)
+        t = d["residual_times"]
+        every = max(1, len(t) // 7)
+        style = {"ls": ls, "color": COLORS[re], "marker": MARKERS[re], "markevery": every,
+                 "ms": 3, "mfc": "white" if row["N"] == 129 else COLORS[re], "lw": 1.1}
+        axs[0].semilogy(t, d["residuals"], label=f"Re {re}, {row['N']}²", **style)
+        axs[1].plot(t, d["kinetic_energy"], **style)
+    axs[0].axhline(1e-6, color=MUTED, ls=":", lw=1, label="Stopping threshold")
+    axs[0].set(xlabel="Time $t$ ($L/U$)",
+               ylabel=r"$\|\omega^{n+1}-\omega^n\|_\infty/\Delta t$")
+    axs[1].set(xlabel="Time $t$ ($L/U$)", ylabel=r"Kinetic energy $\frac{1}{2}\int|\mathbf{u}|^2\,dA$")
+    axs[0].legend(ncol=2, loc="upper right")
+    panel_titles(axs, ("Steady convergence", "Kinetic energy"))
     for ax in axs:
-        ax.grid(alpha=0.15)
+        ax.grid()
+        ax.set_xlim(left=0)
     savefig(fig, "residuals")
 
     verification_figure(ver)
 
-    fig, axs = plt.subplots(1, 3, figsize=(10, 3.7), layout="constrained")
+    fig, axs = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 2.5), layout="constrained")
+    corners = {"BR": "bottom-right", "BL": "bottom-left", "TL": "top-left"}
+    titles = []
     for ax, (re, corner, limits) in zip(
         axs,
         (
@@ -482,17 +455,17 @@ def figures(rows, cases, ver):
         p = c["p"]
         ed = pp.corner_vortices(p, g)[corner]
         levels = ed.psi * np.array([0.05, 0.15, 0.35, 0.6, 0.85, 0.97])
-        ax.contour(g.x, g.y, p.T, levels=levels, colors=COLORS[re], linewidths=1)
-        ax.contour(g.x, g.y, p.T, levels=[0], colors="#839299", linewidths=0.6)
-        ax.plot(ed.x, ed.y, "+", color="#172f3e", ms=9)
-        ax.set(
-            xlim=limits[:2],
-            ylim=limits[2:],
-            aspect="equal",
-            xlabel="x",
-            ylabel="y",
-            title=f"Re {re} · {corner}\nψ max = {ed.psi:.2e}",
-        )
+        ax.contour(g.x, g.y, p.T, levels=levels, colors=COLORS[re], linewidths=0.9)
+        ax.contour(g.x, g.y, p.T, levels=[0], colors=GUIDE, linewidths=0.6)
+        ax.plot(ed.x, ed.y, "+", color=INK, ms=7, mew=1)
+        mantissa, exponent = f"{ed.psi:.2e}".split("e")
+        ax.text(0.03, 0.97 if corner != "TL" else 0.05,
+                rf"$\psi_{{\max}} = {mantissa}\times10^{{{int(exponent)}}}$",
+                transform=ax.transAxes, va="top" if corner != "TL" else "bottom",
+                ha="left" if corner == "BR" else "left", fontsize=8, color=INK)
+        ax.set(xlim=limits[:2], ylim=limits[2:], aspect="equal", xlabel="$x$", ylabel="$y$")
+        titles.append(f"Re = {re}, {corners[corner]}")
+    panel_titles(axs, titles)
     savefig(fig, "corner_eddies")
 
     c = cases["Re400_N129"]
@@ -716,39 +689,51 @@ def accuracy_outputs(accuracy, rows, cases, fourth):
         before,rest=text.split(start,1)
         _,after=rest.split(end,1)
         readme.write_text(before+start+"\n"+"\n".join(md)+"\n"+end+after)
-    fig,axs=plt.subplots(1,3,figsize=(10.5,3.7),layout="constrained")
+    fig,axs=plt.subplots(1,3,figsize=(TEXT_WIDTH,2.6),layout="constrained")
     for ax,r in zip(axs,accuracy["grid"]):
         fit=r["scalar_fits"]["psi_min"]
         h=np.asarray(r["h"])
         q=np.asarray(fit["values"])
-        ax.plot(h,q,"o",color=COLORS[r["Re"]],label="Computed grids")
-        if r["Re"]==400:
-            ax.plot(fourth["h"][-1],fourth["psi_min"][-1],"s",mfc="white",mec=TEAL,label="Independent 513²")
+        re=r["Re"]
+        ax.plot(h,q,MARKERS[re],color=COLORS[re],ms=4.5,label="Computed grids",zorder=4)
+        if re==400:
+            ax.plot(fourth["h"][-1],fourth["psi_min"][-1],"s",mfc="white",mec=COLORS[re],mew=1,ms=5,label="Independent 513²",zorder=4)
         if fit["order"] is not None:
             xx=np.linspace(0,max(h),100)
             coefficient=(q[-1]-fit["extrapolated"])/h[-1]**fit["order"]
-            ax.plot(xx,fit["extrapolated"]+coefficient*xx**fit["order"],"--",color=COLORS[r["Re"]],label="Conditional power fit")
-            ax.plot(0,fit["extrapolated"],"+",color="#172f3e",ms=9)
-        ax.axhline(bm.GHIA_VORTEX[r["Re"]].psi,color="#839299",lw=1,label="Ghia")
-        if r["Re"]==1000:
-            ax.axhline(bm.BP_VORTEX.psi,color=ORANGE,lw=1,label="Botella-Peyret")
-        ax.set(xlabel="Grid spacing h",ylabel=r"Primary $\psi_{\min}$",title=f"Re = {r['Re']}")
-        ax.ticklabel_format(axis="x",style="sci",scilimits=(0,0))
-        ax.grid(alpha=.18)
-        ax.legend(fontsize=8)
+            ax.plot(xx,fit["extrapolated"]+coefficient*xx**fit["order"],"--",color=COLORS[re],lw=1,label=f"Conditional fit, $p$ = {fit['order']:.2f}")
+            ax.plot(0,fit["extrapolated"],"+",color=INK,ms=7,mew=1,label="Extrapolated ($h=0$)")
+        ax.axhline(bm.GHIA_VORTEX[re].psi,color=GUIDE,lw=0.9,label="Ghia et al.")
+        if re==1000:
+            ax.axhline(bm.BP_VORTEX.psi,color=REF,lw=0.9,ls="-.",label="Botella & Peyret")
+        ax.set(xlabel="Grid spacing $h$",ylabel=r"Primary $\psi_{\min}$")
+        ticks=sorted([0,*h])
+        labels,last=[],None
+        for v in ticks:  # skip labels that would collide with their neighbour
+            keep=last is None or v-last>0.17*max(h)
+            labels.append(("0" if v==0 else f"1/{round(1/v)}") if keep else "")
+            last=v if keep else last
+        ax.set_xticks(ticks,labels)
+        ax.grid()
+        ax.legend(loc="upper left",frameon=True,framealpha=0.85,edgecolor="none",facecolor="white")
+    panel_titles(axs,[f"Re = {r['Re']}" for r in accuracy["grid"]])
     savefig(fig,"grid_convergence")
-    fig,axs=plt.subplots(1,3,figsize=(10.5,3.7),layout="constrained")
+    fig,axs=plt.subplots(1,3,figsize=(TEXT_WIDTH,2.6),layout="constrained")
     for ax,r in zip(axs,accuracy["temporal"]):
         dt=np.asarray(r["dts"][:2])
-        for key,label,color in (("u_l2","u profile",TEAL),("v_l2","v profile",ORANGE)):
+        for (key,label),color,marker,ls in zip((("u_l2","$u$ profile"),("v_l2","$v$ profile")),PAIR,("o","s"),("-","--")):
             e=[d[key] for d in r["successive_profile_differences"]]
-            ax.loglog(dt,e,"o-",color=color,label=f"{label}, p={r['profile_orders'][key]:.3f}")
-        ax.loglog(dt,e[-1]*dt/dt[-1],":",color="#839299",label="Slope 1")
-        ax.set_xticks(dt[::-1], [f"{step:.2e}" for step in dt[::-1]])
+            ax.loglog(dt,e,marker=marker,ls=ls,color=color,mfc="white",label=label)
+            # Observed order, in the empty corner below the slope guide.
+            ax.text(0.97,0.06 if key=="v_l2" else 0.15,f"$p_{key[0]}$ = {r['profile_orders'][key]:.2f}",
+                    transform=ax.transAxes,ha="right",fontsize=7.5,color=color)
+        ax.loglog(dt,e[-1]*dt/dt[-1]*0.7,":",color=GUIDE,lw=1,label="Slope 1")
+        ax.set_xticks(dt[::-1], [f"{step:.1e}" for step in dt[::-1]])
         ax.xaxis.set_minor_formatter(NullFormatter())
-        ax.set(xlabel=r"Larger step $\Delta t$ in each pair",ylabel=r"Profile $L^2$ difference",title=f"Re = {r['Re']} | T = 5")
-        ax.grid(alpha=.18,which="both")
-        ax.legend(fontsize=8)
+        ax.set(xlabel=r"Larger step $\Delta t$ in each pair",ylabel=r"Profile $L^2$ difference")
+        ax.grid(which="major")
+    fig.legend(*axs[0].get_legend_handles_labels(),loc="outside upper center",ncol=3)
+    panel_titles(axs,[f"Re = {r['Re']}, $T$ = 5" for r in accuracy["temporal"]])
     savefig(fig,"cavity_time_convergence")
 
 

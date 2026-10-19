@@ -490,10 +490,10 @@ would be the Poisson discretisation error of the exact initial vorticity, and
 the test would exercise neither the transport step nor the wall treatment.
 
 \includegraphics[width=\linewidth]{verification.pdf}\par
-{\small\color{muted}Spatial streamfunction error ($L^2$), temporal
-self-convergence ($L^2$ difference from the same-grid reference), and local
+{\small\color{muted}(a) Spatial streamfunction error ($L^2$), (b) temporal
+self-convergence ($L^2$ difference from the same-grid reference), and (c) local
 wall truncation error (maximum over the four walls). Dotted guides show the
-expected slopes.}
+expected slopes; legend values $p$ are the observed orders on the finest pair.}
 
 \clearpage
 \subsection{What the convergence measurements say}
@@ -520,8 +520,10 @@ finite temporal reference scale like $\dt-\dt_{\mathrm{ref}}$; this bias alone
 predicts the measured orders 1.011, 1.023 and 1.047.
 
 Two additional checks challenge the setup. An asymmetric field,
-$\psi_e=\sin(\pi x)\sin(2\pi y)e^{-t}
-+0.3\sin(3\pi x)\sin(\pi y)e^{-2t}$, integrated to $T=0.5$ on
+\[
+\psi_e=\sin(\pi x)\sin(2\pi y)e^{-t}+0.3\sin(3\pi x)\sin(\pi y)e^{-2t},
+\]
+integrated to $T=0.5$ on
 $17^2,33^2,65^2$ grids, gives streamfunction orders 2.29 and 2.00 (the $17^2$
 grid is pre-asymptotic). On the $129^2$ grid, doubling $\dt$ to $10^{-5}$
 changes the streamfunction $L^2$ error by about 3\%, so the temporal
@@ -579,7 +581,8 @@ vortex moves toward the cavity centre. Counter-rotating corner cells become
 more prominent; at $\Rey=3200$ a top-left cell is visible.
 
 \includegraphics[width=0.92\linewidth]{vorticity.pdf}\par
-{\small\color{muted}Vorticity with streamfunction contours. The same range
+{\small\color{muted}Vorticity with streamfunction contours; negative (clockwise) levels are
+dashed. The same range
 $[-20,20]$ is used in all panels. Saturated colours hide larger magnitudes;
 the full fields, including the lid-corner values, are not clipped in the data.}
 
@@ -656,8 +659,9 @@ units and explicitly compares earlier $t=150$ or $t=300$ snapshots with the
 converged fine-grid states. A residual threshold alone is not an error bound.
 
 \includegraphics[width=\linewidth]{residuals.pdf}\par
-{\small\color{muted}Recorded interior update residuals and kinetic energy on
-the $129^2$ and $257^2$ grids.
+{\small\color{muted}Recorded (a) interior update residuals and (b) kinetic energy on
+the $129^2$ (dashed, open markers) and $257^2$ (solid, filled markers) grids.
+Colour and marker shape both identify the Reynolds number.
 The threshold is $10^{-6}$. Energy is a global diagnostic and can appear almost
 constant while the maximum update residual remains above the threshold.}
 
@@ -676,9 +680,10 @@ equating benchmark agreement with continuum accuracy.
 \includegraphics[width=0.91\linewidth]{centerlines.pdf}\par
 \end{center}
 {\small\color{muted}Computed profiles are drawn from the full grid;
-markers are published stations. Red crosses flag suspect published values
-but retain them in the headline RMS. The orange crosses at Re = 1000 show
-the reflected Botella-Peyret reference. The Re = 1000 and 3200 curves are
+line style distinguishes the grids (dotted, dashed, solid from coarse to
+fine). Open circles are the published Ghia stations; black crosses flag
+suspect published values but retain them in the headline RMS. Open grey
+diamonds at Re = 1000 show the reflected Botella-Peyret reference. The Re = 1000 and 3200 curves are
 states that meet the common steady criterion. Their remaining drift is
 measured in the accuracy study.}
 
