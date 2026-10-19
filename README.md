@@ -11,13 +11,9 @@
 [![Notebook](https://img.shields.io/badge/Notebook-executed-F37626?logo=jupyter&logoColor=white)](notebooks/lid_driven_cavity.ipynb)
 [![Animations: Manim](https://img.shields.io/badge/Animations-Manim-2A9D8F)](docs/animations.md)
 
-<!-- Inline player: upload figures/cavity_particles.mp4 through GitHub's web editor and paste the
-     resulting https://github.com/user-attachments/assets/... URL on its own line below this comment. -->
 https://github.com/user-attachments/assets/09e60728-4480-42cf-a6fa-aa3f81e8e082
 
-
-
-<sub>▶ <b><a href="figures/cavity_particles.mp4">Play the animation</a></b> (MP4, Manim) · Passive tracers advected through the converged steady velocity fields on 257² grids. Colour shows speed relative to the lid; all panels share one clock and one colour scale.</sub>
+<sub>Passive tracers advected through the converged steady velocity fields on 257² grids. Colour shows speed relative to the lid; all panels share one clock and one colour scale.</sub>
 
 **[Illustrated report](report/report.pdf)** · **[Executed notebook](notebooks/lid_driven_cavity.ipynb)** · **[Reference data audit](docs/references.md)** · **[Accuracy study](docs/accuracy.md)** · **[How the animations are made](docs/animations.md)**
 
@@ -57,15 +53,7 @@ A square cavity is filled with fluid, and its top wall slides to the right at co
 
 ## How the circulation develops
 
-<p align="center">
-<!-- Inline player: upload figures/cavity_startup.mp4 through GitHub's web editor and paste the
-     resulting https://github.com/user-attachments/assets/... URL on its own line below this comment. -->
-
 https://github.com/user-attachments/assets/181addc3-0449-4acb-8039-54ebb8ac036f
-
-
-<br><sub>▶ <b><a href="figures/cavity_startup.mp4">Play the animation</a></b> (MP4, Manim)</sub>
-</p>
 
 The lid starts moving at **t = 0**. Watch motion spread from the upper wall into the interior as the main vortex forms. The left panel shows speed and instantaneous streamlines; the right shows signed vorticity, which measures local rotation. The strip underneath plots the kinetic energy recorded by the solver; it climbs toward the dashed steady-state value. Every colour scale stays fixed throughout.
 
@@ -285,7 +273,7 @@ All plots and animations are generated from the audited data in `data/`. None is
 
 Static figures are drawn at their printed size (165 mm, the report's text width) in Times New Roman at 8-9 pt, so labels in the PDF match the body text. Panels carry letters that the captions refer to, observed convergence orders are printed in the legends, and fonts are embedded in the vector PDFs; PNG copies are exported at 300 dpi. Colour choices were checked with the WCAG contrast and greyscale audit from the scientific-visualization toolkit.
 
-The animations are rendered with **Manim** at twice their delivered resolution, downsampled, and encoded as full-colour H.264 MP4s, a fraction of the size of an equivalent GIF. Each video is decoded after writing, and its frame count and PSNR against the rendered frames are recorded. The README shows a still poster frame from each video. The details are in [docs/animations.md](docs/animations.md).
+The animations are rendered with **Manim** at twice their delivered resolution, downsampled, and encoded as full-colour H.264 MP4s, a fraction of the size of an equivalent GIF. Each video is decoded after writing, and its frame count and PSNR against the rendered frames are recorded. The README plays both videos inline from GitHub's video host. The details are in [docs/animations.md](docs/animations.md).
 
 ## Reproduce and extend
 

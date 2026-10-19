@@ -42,11 +42,11 @@ Manim renders each frame with Cairo at **twice** the delivered resolution (2880 
 
 A GIF was tried first. Thousands of thin, partly transparent trails change a large share of the pixels in every frame, which defeats GIF's 256-colour palette and LZW compression. A faithful 1440-pixel GIF of the tracer scene was about 47 MB; the full-colour MP4 is a small fraction of that.
 
-The builder decodes each delivered MP4 and checks its frame count and size. It records the PSNR of every decoded frame against the rendered frame (mean and minimum) in `data/animations.json`, together with the file size and hashes. A still **poster** frame (`figures/*.png`, full-colour PNG) is written next to each video. The README shows the poster and links it to the video.
+The builder decodes each delivered MP4 and checks its frame count and size. It records the PSNR of every decoded frame against the rendered frame (mean and minimum) in `data/animations.json`, together with the file size and hashes. A still **poster** frame (`figures/*.png`, full-colour PNG) is written next to each video as a fallback for viewers that cannot play video.
 
 ### Embedding in the GitHub README
 
-GitHub plays inline video only for files uploaded through its web editor, which produces a `https://github.com/user-attachments/assets/…` URL. A `<video>` tag that points at an MP4 in the repository does not play. To show an inline player, open the README in the GitHub web editor and drag the MP4 into the text where the HTML comment marks the spot. GitHub uploads it and inserts the URL on its own line. Keep the poster image as a fallback for other viewers, such as PyPI or local Markdown previews.
+GitHub plays inline video only for files uploaded through its web editor, which produces a `https://github.com/user-attachments/assets/…` URL. A `<video>` tag that points at an MP4 in the repository does not play. The README embeds both videos this way: each MP4 was dragged into the GitHub web editor, which uploaded it and inserted its `user-attachments` URL on a line of its own. After rebuilding a video, upload it again the same way and replace the old URL. The poster images remain available for viewers that cannot play video, such as PyPI or local Markdown previews.
 
 ## Rebuild
 
