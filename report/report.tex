@@ -56,7 +56,7 @@ and the limits of the resulting comparison with published data.
 \begin{tabularx}{\linewidth}{@{}YYY@{}}
 \textbf{Model} & \textbf{Method} & \textbf{Evidence}\\
 2-D, viscous, incompressible & Vorticity--streamfunction & Manufactured solutions\\
-Unit square, impulsive lid & Centered space, split time & Two literature references
+Unit square, impulsive lid & Centered space, IMEX time & Two literature references
 \end{tabularx}
 \vfill
 {\sffamily\large Marouane Toumi\par}
@@ -166,11 +166,11 @@ step. It then tests accuracy with a smooth manufactured solution, interprets
 the cavity fields, and compares numerical references. The final section maps
 the mathematics to the software and gives reproduction commands.
 
-All nine production states were integrated afresh from rest with the current
-numerical kernel. Each record includes the case parameters, start and finish
+All nine production states were integrated from rest with the same numerical
+kernel. Each record includes the case parameters, start and finish
 timestamps, dependency versions, numerical-source fingerprint, runner
-fingerprint, and hashes of the saved fields and cache. The results builder
-rejects stale, altered, or unconverged production states. The manufactured
+fingerprint, and hashes of the saved fields and cache, so that the results
+builder can reject altered or unconverged production states. The manufactured
 verification and cavity sensitivity experiments are separately reproducible.
 
 \clearpage
@@ -199,7 +199,10 @@ vanishes, leaving
 \boxed{\omega_t+\psi_y\omega_x-\psi_x\omega_y
 =\Rey^{-1}\Delta\omega,\qquad -\Delta\psi=\omega.}\label{eq:transport}
 \end{equation}
-The convection sign follows directly from $u\omega_x+v\omega_y$.
+The convection sign follows directly from $u\omega_x+v\omega_y$ with
+$u=\psi_y$, $v=-\psi_x$. The term is sometimes printed as
+$\psi_x\omega_y-\psi_y\omega_x$; under the definitions \eqref{eq:definitions}
+that expression equals $-\mathbf{u}\cdot\nabla\omega$ and has the wrong sign.
 A positive lid speed drives a clockwise primary circulation: the primary
 streamfunction is negative in this convention.
 
@@ -305,7 +308,9 @@ Dividing the Taylor remainder by $h^2$ leaves an $O(h)$ wall truncation error.
 That does not by itself establish a first-order global streamfunction error:
 the wall error enters a coupled elliptic and transport problem. The observed
 global order must be measured. Section~\ref{sec:verification} finds approximately second-order
-streamfunction convergence on the selected smooth manufactured field. This
+streamfunction and vorticity convergence with the Thom wall treatment on the
+selected smooth manufactured field, over a horizon long enough for
+wall-generated errors to reach the interior. This
 is consistent with the role of local vorticity formulas discussed by
 E and Liu~\cite{eliu1996}; it is not a universal guarantee for a singular cavity.
 
@@ -469,47 +474,60 @@ The four inert vorticity corners are excluded from both vorticity norms without
 renormalising other weights; the streamfunction norms use the full grid.
 
 \begin{itemize}
-\item \textbf{Space:} $N=17,33,65,129$, fixed $\dt=10^{-5}$, $T=0.005$.
+\item \textbf{Space:} $N=17,33,65,129$, fixed $\dt=5\times10^{-6}$, $T=0.5$.
 Run both exact wall vorticity and the production Thom wall treatment.
 \item \textbf{Time:} fixed $65^2$ grid, $T=0.032$, with
 $\dt=3.2,1.6,0.8,0.4\times10^{-4}$. Compare to a same-grid solution with
 $\dt_{\mathrm{ref}}=2.5\times10^{-6}$ to reduce the spatial-error floor.
-\item \textbf{Joint refinement:} $N=17,33,65$, $T=0.04$ and
+\item \textbf{Joint refinement:} $N=17,33,65$, $T=0.5$ and
 $\dt=4\times10^{-4}(h/h_{17})^2$.
 \end{itemize}
+The spatial horizon matters. The diffusion length $\sqrt{T/\Rey}\approx0.07$
+spans about one cell on the $17^2$ grid and nine cells on the $129^2$ grid, so
+vorticity errors generated at the walls reach the interior. Over a much
+shorter horizon such as $T=0.005$, about 96--99\% of the streamfunction error
+would be the Poisson discretisation error of the exact initial vorticity, and
+the test would exercise neither the transport step nor the wall treatment.
 
 \includegraphics[width=\linewidth]{verification.pdf}\par
-{\small\color{muted}Spatial streamfunction error, temporal self-convergence,
-and local wall truncation error. Dashed guides show the expected slopes.}
+{\small\color{muted}Spatial streamfunction error ($L^2$), temporal
+self-convergence ($L^2$ difference from the same-grid reference), and local
+wall truncation error (maximum over the four walls). Dotted guides show the
+expected slopes.}
 
 \clearpage
 \subsection{What the convergence measurements say}
 \begin{tabularx}{\linewidth}{@{}Xl@{}}\toprule
 Measurement & Successive observed orders\\\midrule
-Spatial $\psi$, exact wall $\omega$, $L^2$ & 2.007, 2.002, 2.001\\
-Spatial $\psi$, Thom wall $\omega$, $L^2$ & 1.999, 1.989, 1.989\\
-Spatial $\omega$, Thom wall, $L^2$ & 1.598, 1.819, 2.071\\
-Spatial $\omega$, Thom wall, maximum norm & 1.080, 1.349, 1.931\\
+Spatial $\psi$, exact wall $\omega$, $L^2$ & 2.119, 2.040, 2.043\\
+Spatial $\omega$, exact wall $\omega$, $L^2$ & 2.110, 2.038, 2.042\\
+Spatial $\psi$, Thom wall $\omega$, $L^2$ & 2.147, 2.029, 2.036\\
+Spatial $\omega$, Thom wall, $L^2$ & 2.144, 2.040, 2.044\\
+Spatial $\omega$, Thom wall, maximum norm & 1.858, 1.995, 2.029\\
 Temporal $\psi$, same-grid reference, $L^2$ & 1.011, 1.023, 1.047\\
-Joint refinement $\psi$, $L^2$ & 2.002, 1.997\\\bottomrule
+Joint refinement $\psi$, $L^2$ & 2.154, 2.025\\\bottomrule
 \end{tabularx}
 
-The streamfunction measurements support second-order spatial consistency for
-this smooth test and first-order time accuracy. Vorticity converges less
-uniformly, particularly in the wall-sensitive maximum norm. Reporting its
-full sequence is more informative than selecting only the finest-grid order.
-The finite temporal reference introduces a small bias: for an ideal
-first-order error, differences scale like $\dt-\dt_{\mathrm{ref}}$, so ratios
-can give orders slightly above one.
+The measurements support second-order spatial accuracy for this smooth test,
+with Thom as well as exact wall vorticity, and first-order time accuracy.
+The exact-wall vorticity row tests the discrete transport equation directly,
+since that run receives exact wall values. Only the Thom maximum-norm
+vorticity order on the coarsest pair (1.86) departs noticeably from 2; the
+local $O(h)$ wall error is largest there. The Thom errors are smaller because
+the wall error partly cancels the interior error, so error levels do not rank
+the wall treatments. For an ideal first-order error, differences from the
+finite temporal reference scale like $\dt-\dt_{\mathrm{ref}}$; this bias alone
+predicts the measured orders 1.011, 1.023 and 1.047.
 
-Two additional checks challenge the verification setup. An asymmetric field,
+Two additional checks challenge the setup. An asymmetric field,
 $\psi_e=\sin(\pi x)\sin(2\pi y)e^{-t}
-+0.3\sin(3\pi x)\sin(\pi y)e^{-2t}$, is integrated to $T=0.05$ on
-$17^2,33^2,65^2$ grids: its streamfunction orders are approximately 1.97 and
-2.00. Halving $\dt$ in the original finest-grid spatial test changes its
-streamfunction $L^2$ error by less than 0.003\%. These checks reduce concern
-that symmetry, the short observation time, or temporal contamination produced
-the reported spatial slope. All errors remain available in the JSON evidence.
++0.3\sin(3\pi x)\sin(\pi y)e^{-2t}$, integrated to $T=0.5$ on
+$17^2,33^2,65^2$ grids, gives streamfunction orders 2.29 and 2.00 (the $17^2$
+grid is pre-asymptotic). On the $129^2$ grid, doubling $\dt$ to $10^{-5}$
+changes the streamfunction $L^2$ error by about 3\%, so the temporal
+contribution shifts the observed orders by at most about 0.04. These checks
+make it unlikely that symmetry or temporal contamination produced the
+spatial slope. All errors are in the JSON evidence.
 
 \subsection{Algebraic checks and their interpretation}
 For reconstructed velocity, the centered mixed differences cancel:
@@ -522,7 +540,7 @@ identity:
 \begin{equation}
 r_P=\|\Delta_h\psi+\omega_I\|_\infty.
 \end{equation}
-Both quantities are recomputed for every fresh cavity state and exported in
+Both quantities are recomputed for every cavity state and exported in
 \code{data/validation.json}; the Poisson audit requires $r_P<10^{-8}$.
 
 For a vorticity field constructed consistently from one $\psi$, the wall
@@ -645,8 +663,9 @@ constant while the maximum update residual remains above the threshold.}
 
 \subsection{What grid refinement supports}
 The primary-vortex comparison improves with refinement. Other observables
-need individual checks: at $\Rey=400$, for example, the unflagged vertical
-profile discrepancy does not decrease between $129^2$ and $257^2$.
+need individual checks: at $\Rey=400$, for example, the unflagged RMS
+discrepancy of $v$ on the horizontal centerline does not decrease between
+$129^2$ and $257^2$.
 The next section measures differences between our own grids, independently of
 Ghia's values, and reports conditional Richardson estimates rather than
 equating benchmark agreement with continuum accuracy.
@@ -671,8 +690,10 @@ E_{u,\mathrm{RMS}}=\sqrt{\frac{1}{m}\sum_{k=1}^{m}
 \left[u_h(0.5,y_k)-u_{\mathrm{ref},k}\right]^2},
 \end{equation}
 and likewise for $v$. Linear interpolation evaluates the numerical fields
-at the printed coordinates. The zero-velocity endpoints are included; this
-is an absolute dimensionless velocity error, not a percentage.
+at the printed coordinates. The wall stations, where the velocity is
+prescribed ($u=0$ at $y=0$, $u=1$ at $y=1$, $v=0$ at $x=0,1$), are included;
+they contribute zero error and therefore lower the RMS. This is an absolute
+dimensionless velocity error, not a percentage.
 
 The original paper was inspected at Tables I and II (pp.\ 398--399) and
 Table V (pp.\ 408--409). Two anomalous stations affect this study:
@@ -684,8 +705,6 @@ would use the answer under test to alter the reference.
 It is retained; a second RMS shows the effect of excluding that one point.
 \end{itemize}
 These are flags for interpretation, not claims of an official erratum.
-One genuine local transcription error was corrected: the $\Rey=1000$
-vertical velocity at $x=0.9063$ is printed as $-0.51550$, not $-0.51500$.
 
 \begin{center}\small
 \begin{tabular}{@{}rrrrrr@{}}\toprule
@@ -738,13 +757,14 @@ Quantity & Present, $257^2$ & Ghia & Botella--Peyret\\\midrule
 
 \subsection{What this changes in the interpretation}
 Agreement with Ghia is close, but it is not a continuum error bar. The
-streamfunction is closer to Ghia, whereas the vertical profile and vortex
-ordinate are closer to the spectral reference. The comparison reveals the
+primary-vortex strength and the $u$ profile on the vertical centerline are
+closer to Ghia, whereas the $v$ profile on the horizontal centerline and the
+vortex ordinate are closer to the spectral reference. The comparison reveals the
 size and direction of differences between reference methods. It also shows
 why one small percentage cannot summarise every feature of the flow.
 
-The present field now meets the steady threshold. A separate continuation
-study measures its small remaining drift. The spectral reference reports
+The present field meets the common steady threshold, and
+Section~\ref{sec:accuracy} measures its remaining drift. The spectral reference reports
 higher accuracy in its own convergence study, but benchmark discrepancies
 still combine errors of both methods. Our three-grid study supplies a distinct,
 explicitly conditional estimate of our discretisation uncertainty.

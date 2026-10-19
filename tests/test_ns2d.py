@@ -246,13 +246,20 @@ def test_spatial_order_two_with_exact_boundary_vorticity():
 
 
 def test_spatial_order_two_with_thom_boundary_vorticity():
-    """psi must still be second order when omega's wall values come from Thom."""
+    """psi and omega must still be second order when omega's wall values come from Thom.
+
+    Re = 10 and T = 0.05 give a diffusion length sqrt(T/Re) of about 0.07, several
+    cells on every grid, so the Thom wall error reaches the interior. Over a much
+    shorter horizon the psi error is almost entirely the Poisson discretisation
+    error of the exact initial vorticity and would not test the wall treatment.
+    """
     st = spatial_convergence(
-        sizes=(17, 33, 65, 129), dt=1e-5, T=0.005, omega_bc="thom", verbose=False
+        sizes=(17, 33, 65), dt=1e-5, T=0.05, Re=10.0, omega_bc="thom", verbose=False
     )
-    p = st.orders["psi_l2"][1:]
-    assert np.all(p > 1.9), p
-    assert st.orders["omega_l2"][-1] > 1.8
+    for key in ("psi_l2", "omega_l2"):
+        p = st.orders[key][1:]
+        assert np.all(p > 1.9), (key, p)
+    assert st.orders["omega_inf"][-1] > 1.85
 
 
 def test_temporal_order_one():

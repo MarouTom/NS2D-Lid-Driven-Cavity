@@ -163,22 +163,29 @@ def audit_case(name):
     return row, dict(g=g, p=p, w=w, u=u, v=v, cmp=cmp, fields=fields)
 
 
+# Spatial MMS horizon. At Re = 100 the diffusion length sqrt(T/Re) is about 0.07,
+# several cells on every grid, so wall-generated vorticity errors reach the
+# interior. Over a much shorter horizon the psi error is almost entirely the
+# Poisson discretisation error of the exact initial vorticity.
+MMS_T, MMS_DT = 0.5, 5e-6
+
+
 def verification():
     studies = {
         "spatial_exact": vf.spatial_convergence(
-            sizes=(17, 33, 65, 129), dt=1e-5, T=0.005, omega_bc="exact", verbose=False
+            sizes=(17, 33, 65, 129), dt=MMS_DT, T=MMS_T, omega_bc="exact", verbose=False
         ),
         "spatial_thom": vf.spatial_convergence(
-            sizes=(17, 33, 65, 129), dt=1e-5, T=0.005, omega_bc="thom", verbose=False
+            sizes=(17, 33, 65, 129), dt=MMS_DT, T=MMS_T, omega_bc="thom", verbose=False
         ),
         "temporal": vf.temporal_convergence(
             n=65, dts=(3.2e-4, 1.6e-4, 8e-5, 4e-5), T=0.032, verbose=False
         ),
         "joint": vf.joint_convergence(
-            sizes=(17, 33, 65), dt0=4e-4, n0=17, T=0.04, verbose=False
+            sizes=(17, 33, 65), dt0=4e-4, n0=17, T=MMS_T, verbose=False
         ),
         "asymmetric": vf.spatial_convergence(
-            sizes=(17, 33, 65), dt=1e-5, T=0.05,
+            sizes=(17, 33, 65), dt=MMS_DT, T=MMS_T,
             psi_expr="sin(pi*x)*sin(2*pi*y)*exp(-t) + 0.3*sin(3*pi*x)*sin(pi*y)*exp(-2*t)",
             verbose=False,
         ),
@@ -210,8 +217,9 @@ def verification():
         )
         wall.append({"N": n, "h": g.h, "max_error": float(err)})
     data["wall"] = wall
+    # Temporal contribution on the finest spatial grid: compare MMS_DT with 2*MMS_DT.
     data["spatial_time_sensitivity"] = [
-        asdict(vf.mms_errors(n=129, dt=dt, T=0.005)) for dt in (1e-5, 5e-6)
+        asdict(vf.mms_errors(n=129, dt=dt, T=MMS_T)) for dt in (2 * MMS_DT, MMS_DT)
     ]
     data["stokes_threshold"] = [
         {"N": n, "d_critical": threshold(n)} for n in (17, 25, 33)
@@ -227,6 +235,48 @@ def verification():
         json.dumps(data, indent=2, allow_nan=False) + "\n"
     )
     return data
+
+
+def verification_figure(ver):
+    """Spatial, temporal and local-wall convergence panels (figures/verification)."""
+    fig, axs = plt.subplots(1, 3, figsize=(10.5, 4), layout="constrained")
+    for name, lab, color in (
+        ("spatial_exact", "Exact wall vorticity", BLUE),
+        ("spatial_thom", "Thom wall vorticity", TEAL),
+    ):
+        es = ver[name]["errors"]
+        h = np.array([e["h"] for e in es])
+        err = [e["psi_l2"] for e in es]
+        axs[0].loglog(h, err, "o-", color=color, label=lab)
+    axs[0].loglog(h, err[-1] * (h / h[-1]) ** 2, ":", color="#8b969a", label="Slope 2")
+    es = ver["temporal"]["errors"]
+    dt = np.array([e["dt"] for e in es])
+    err = np.array([e["psi_l2"] for e in es])
+    axs[1].loglog(dt, err, "o-", color=ORANGE, label=r"$\psi$, same-grid reference")
+    axs[1].loglog(dt, err[-1] * dt / dt[-1], ":", color="#8b969a", label="Slope 1")
+    wall = ver["wall"]
+    h = np.array([e["h"] for e in wall])
+    err = np.array([e["max_error"] for e in wall])
+    axs[2].loglog(h, err, "o-", color=BLUE, label="Local Thom error")
+    axs[2].loglog(h, err[-1] * h / h[-1], ":", color="#8b969a", label="Slope 1")
+    for ax, title, xlabel, ylabel in zip(
+        axs,
+        ("Space: streamfunction", "Time: self-convergence", "Local wall error"),
+        ("Grid spacing h", "Time step Δt", "Grid spacing h"),
+        (r"$L^2$ error", r"$L^2$ difference", "Maximum error"),
+    ):
+        ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
+        ax.grid(alpha=0.2, which="both")
+        ax.legend(fontsize=9)
+        ax.xaxis.set_minor_formatter(NullFormatter())
+        ax.tick_params(axis="x", labelsize=9)
+    for ax in (axs[0], axs[2]):
+        ax.set_xticks(
+            [1 / 128, 1 / 64, 1 / 32, 1 / 16], ["1/128", "1/64", "1/32", "1/16"]
+        )
+    axs[1].set_xticks([4e-5, 8e-5, 1.6e-4, 3.2e-4], ["0.4", "0.8", "1.6", "3.2"])
+    axs[1].set_xlabel(r"Time step $\Delta t$ ($\times 10^{-4}$)")
+    savefig(fig, "verification")
 
 
 def figures(rows, cases, ver):
@@ -416,43 +466,7 @@ def figures(rows, cases, ver):
         ax.grid(alpha=0.15)
     savefig(fig, "residuals")
 
-    fig, axs = plt.subplots(1, 3, figsize=(10.5, 4), layout="constrained")
-    for name, lab, color in (
-        ("spatial_exact", "Exact wall vorticity", BLUE),
-        ("spatial_thom", "Thom wall vorticity", TEAL),
-    ):
-        es = ver[name]["errors"]
-        h = np.array([e["h"] for e in es])
-        err = [e["psi_l2"] for e in es]
-        axs[0].loglog(h, err, "o-", color=color, label=lab)
-    axs[0].loglog(h, err[-1] * (h / h[-1]) ** 2, ":", color="#8b969a", label="Slope 2")
-    es = ver["temporal"]["errors"]
-    dt = np.array([e["dt"] for e in es])
-    err = np.array([e["psi_l2"] for e in es])
-    axs[1].loglog(dt, err, "o-", color=ORANGE, label=r"$\psi$, same-grid reference")
-    axs[1].loglog(dt, err[-1] * dt / dt[-1], ":", color="#8b969a", label="Slope 1")
-    wall = ver["wall"]
-    h = np.array([e["h"] for e in wall])
-    err = np.array([e["max_error"] for e in wall])
-    axs[2].loglog(h, err, "o-", color=BLUE, label="Local Thom error")
-    axs[2].loglog(h, err[-1] * h / h[-1], ":", color="#8b969a", label="Slope 1")
-    for ax, title, xlabel in zip(
-        axs,
-        ("Space: streamfunction", "Time: self-convergence", "Local wall error"),
-        ("Grid spacing h", "Time step Δt", "Grid spacing h"),
-    ):
-        ax.set(title=title, xlabel=xlabel, ylabel="Error")
-        ax.grid(alpha=0.2, which="both")
-        ax.legend(fontsize=9)
-        ax.xaxis.set_minor_formatter(NullFormatter())
-        ax.tick_params(axis="x", labelsize=9)
-    for ax in (axs[0], axs[2]):
-        ax.set_xticks(
-            [1 / 128, 1 / 64, 1 / 32, 1 / 16], ["1/128", "1/64", "1/32", "1/16"]
-        )
-    axs[1].set_xticks([4e-5, 8e-5, 1.6e-4, 3.2e-4], ["0.4", "0.8", "1.6", "3.2"])
-    axs[1].set_xlabel(r"Time step $\Delta t$ ($\times 10^{-4}$)")
-    savefig(fig, "verification")
+    verification_figure(ver)
 
     fig, axs = plt.subplots(1, 3, figsize=(10, 3.7), layout="constrained")
     for ax, (re, corner, limits) in zip(

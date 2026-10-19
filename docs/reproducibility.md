@@ -53,7 +53,7 @@ python scripts/build_results.py
 python scripts/build_results.py --skip-verification
 ```
 
-The first command verifies all nine production caches and their provenance, loads the accuracy study, reruns the MMS and small-grid stability studies, and builds the PNG/PDF figures and table inputs. The second reuses the existing MMS JSON when only rebuilding visualisations. Neither starts a missing production run silently.
+The first command verifies all nine production caches and their provenance, loads the accuracy study, reruns the MMS and small-grid stability studies, and builds the PNG/PDF figures and table inputs. The MMS rerun is the slow part: about an hour on one core, because the spatial studies integrate to T = 0.5 with dt = 5e-6. The second command reuses the existing MMS JSON when only rebuilding visualisations. Neither starts a missing production run silently.
 
 Outputs include:
 

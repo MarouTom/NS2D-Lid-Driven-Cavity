@@ -115,19 +115,19 @@ print(f'Consistent circulation identity: {pp.circulation_identity(solver.psi, gr
 
 For
 $$\psi_e=\sin(\pi x)\sin(\pi y)e^{-t}+\tfrac12\sin(2\pi x)\sin(2\pi y)e^{-2t},$$
-we set $\omega_e=-\Delta\psi_e$ and derive the continuous forcing symbolically. Both wall motion and nonlinear convection are nonzero. The following small refinement study uses the production Thom boundary path; it runs without any saved data.
+we set $\omega_e=-\Delta\psi_e$ and derive the continuous forcing symbolically. Both wall motion and nonlinear convection are nonzero. The following small refinement study uses the production Thom boundary path at $\mathrm{Re}=10$, so that within $T=0.05$ the vorticity generated at the walls diffuses several cells into the interior (diffusion length $\sqrt{T/\mathrm{Re}}\approx0.07$). It runs without any saved data.
 """
     )
     code(
         """
-study = vf.spatial_convergence(sizes=(17,33,65), dt=1e-5, T=.005, omega_bc='thom', verbose=False)
+study = vf.spatial_convergence(sizes=(17,33,65), dt=1e-5, T=.05, Re=10, omega_bc='thom', verbose=False)
 print(study.table())
 """
     )
     code("display(Image(filename=str(ROOT/'figures/verification.png'), width=1000))")
     md(
         """
-The figure shows the fuller committed experiment. Streamfunction error is approximately second order in space, temporal self-convergence approximately first order, and the local Thom truncation error approximately first order. Vorticity orders vary with mesh and norm; consult `data/verification.json` for the complete sequence. The four inert vorticity corners are excluded from both vorticity norms.
+The figure shows the fuller committed experiment. Streamfunction and vorticity errors are approximately second order in space, temporal self-convergence approximately first order, and the local Thom truncation error approximately first order. Only the maximum-norm vorticity order with Thom walls is noticeably lower, on the coarsest grid pair; consult `data/verification.json` for the complete sequence. The four inert vorticity corners are excluded from both vorticity norms.
 
 A same-grid fine-time-step reference reduces the spatial error floor in a temporal study; it is still a numerical reference, so the measured order is slightly biased.
 """

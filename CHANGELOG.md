@@ -1,5 +1,12 @@
 # Changelog
 
+## Review corrections
+
+- Run the spatial, asymmetric and joint manufactured-solution studies to T = 0.5, so that wall-generated vorticity reaches the interior; at T = 0.005 the streamfunction error was almost entirely the Poisson error of the initial vorticity.
+- Report exact-wall vorticity orders, and measure the finest-grid temporal contribution by doubling the step.
+- Test Thom-wall spatial order over a long diffusion horizon (Re = 10, T = 0.05).
+- Correct report wording: convection-term sign note, wall stations in the RMS, centerline profile naming, semi-implicit time stepping, figure captions, and revision-history phrasing.
+
 ## Presentation update
 
 - Lead the README with computed particle motion and a separate cavity-startup GIF, with documented timing and interpolation.

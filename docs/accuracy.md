@@ -6,8 +6,8 @@ The numerical scheme is unchanged. This study separates four questions: approxim
 
 | Question | Controlled experiment | Evidence |
 |---|---|---|
-| Smooth spatial accuracy | Exact-wall and Thom MMS; four grids at fixed small dt | `verification.json` |
-| Robustness of MMS | An asymmetric two-mode field to T = 0.05; halve dt on the original finest grid | `verification.json` |
+| Smooth spatial accuracy | Exact-wall and Thom MMS; four grids at fixed small dt, integrated to T = 0.5 so that wall-generated vorticity diffuses into the interior | `verification.json` |
+| Robustness of MMS | An asymmetric two-mode field to T = 0.5; halve dt on the finest spatial grid | `verification.json` |
 | Smooth temporal accuracy | Same-grid fine-time reference | `verification.json` |
 | Actual cavity time accuracy | From rest to T = 5 at N = 129, using dt, dt/2, dt/4 for each Re | `accuracy/temporal_Re*.json` |
 | Cavity grid sensitivity | Three independently converged grids per Re | `accuracy.json`, `grid` |

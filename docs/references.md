@@ -49,7 +49,7 @@ The later benchmark studies are Ghia et al. (1982) and Botella & Peyret (1998), 
 
 ## What the comparisons establish
 
-The MMS studies test formal accuracy for a smooth forced solution. Literature comparisons test agreement on the singular cavity benchmark. Neither a small linear-system residual nor a small discrepancy from one reference establishes continuum accuracy by itself. The cavity study now includes three grids per Reynolds number, transient time refinement and further-continuation measurements from states satisfying the same steady criterion. Its Richardson/GCI estimates are conditional on a leading power-law error; three data points alone cannot establish an asymptotic regime. An independent fourth grid checks that assumption for primary-vortex strength at Re = 400. See [accuracy.md](accuracy.md).
+The MMS studies test formal accuracy for a smooth forced solution. Literature comparisons test agreement on the singular cavity benchmark. Neither a small linear-system residual nor a small discrepancy from one reference establishes continuum accuracy by itself. The cavity study includes three grids per Reynolds number, transient time refinement and further-continuation measurements from states satisfying the same steady criterion. Its Richardson/GCI estimates are conditional on a leading power-law error; three data points alone cannot establish an asymptotic regime. An independent fourth grid checks that assumption for primary-vortex strength at Re = 400. See [accuracy.md](accuracy.md).
 
 ## Grid-uncertainty procedure
 

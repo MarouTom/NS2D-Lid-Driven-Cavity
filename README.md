@@ -96,7 +96,7 @@ solver.save("checkpoint.npz")
 
 ## Verification: measure the approximation
 
-The manufactured solution contains two spatial modes and moving walls, so it exercises both nonlinear convection and the lid-forcing mechanism. Separate space and time studies show approximately second-order streamfunction accuracy in space and first-order accuracy in time. Local Thom wall error is first order. Vorticity convergence varies by grid and norm; the full sequence is retained in [verification.json](data/verification.json). An asymmetric manufactured field and a halved-step check independently challenge the spatial study.
+The manufactured solution contains two spatial modes and moving walls, so it exercises both nonlinear convection and the lid-forcing mechanism. The spatial study runs to T = 0.5 at Re = 100, long enough for vorticity generated at the walls to diffuse into the interior; over a much shorter horizon the streamfunction error would be almost entirely the Poisson discretisation error of the initial vorticity. Separate space and time studies show approximately second-order accuracy in space for both streamfunction and vorticity, with exact and Thom wall vorticity, and first-order accuracy in time. Local Thom wall error is first order. The full sequences are retained in [verification.json](data/verification.json). An asymmetric manufactured field and a doubled-step check on the finest grid independently challenge the spatial study.
 
 <details>
 <summary>View the spatial, temporal and wall-convergence plots</summary>
