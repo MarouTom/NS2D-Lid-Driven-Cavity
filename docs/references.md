@@ -5,12 +5,12 @@ The source pages were checked visually on 20 September 2026; OCR alone was not u
 
 ## Ghia, Ghia & Shin (1982)
 
-**High-Re solutions for incompressible flow using the Navier-Stokes equations and a multigrid method**, *Journal of Computational Physics* 48, 387–411.
+**High-Re solutions for incompressible flow using the Navier-Stokes equations and a multigrid method**, *Journal of Computational Physics* 48, 387-411.
 [DOI](https://doi.org/10.1016/0021-9991(82)90058-4) · [University-hosted scan](https://www.ljll.fr/~frey/papers/Navier-Stokes/Ghia%20V.%2C%20High-Resolutions%20for%20incompressible%20flow%20using%20the%20Navier-Stokes%20equations%20and%20a%20multi-grid%20method.pdf).
 
 - Table I, p. 398: horizontal velocity on the vertical centerline.
 - Table II, p. 399: vertical velocity on the horizontal centerline.
-- Table V, pp. 408–409: primary-vortex properties. Its final row explicitly lists the grid used: 129² at Re = 100, 1000, 3200; 257² at Re = 400, 5000. No grid is inferred from rounded vortex coordinates.
+- Table V, pp. 408-409: primary-vortex properties. Its final row explicitly lists the grid used: 129² at Re = 100, 1000, 3200; 257² at Re = 400, 5000. No grid is inferred from rounded vortex coordinates.
 
 The headline RMS uses **all 17 published stations**, including the zero-velocity endpoints. Secondary RMS values omit only the flagged entries listed below. Those secondary metrics diagnose sensitivity to the reference; they are not replacement headline scores. Velocities are interpolated linearly to the printed four-decimal coordinates, rather than silently treating them as exact fractions of 128.
 
@@ -26,7 +26,7 @@ Flags express an apparent inconsistency with surrounding data and/or the compute
 
 ## Botella & Peyret (1998)
 
-**Benchmark spectral results on the lid-driven cavity flow**, *Computers & Fluids* 27, 421–433.
+**Benchmark spectral results on the lid-driven cavity flow**, *Computers & Fluids* 27, 421-433.
 [DOI](https://doi.org/10.1016/S0045-7930(98)00002-4) · [Paper](https://cats2d.com/documentation/botellapeyret98.pdf).
 
 This is an independent comparison method: Chebyshev collocation with corner singularity subtraction. We use Table 6 (p. 425, N = 160 primary vortex), Table 9 (p. 426, u), and Table 10 (p. 427, v). These are numerical reference solutions, not experimental measurements.
@@ -41,9 +41,9 @@ The streamfunction changes sign: ψ_R(x_R,y) = −ψ_L(1−x_R,y). Thus their pr
 
 The report introduction draws on these sources:
 
-- S. R. Bistafa, **200 Years of the Navier–Stokes Equation**, [arXiv:2401.13669](https://arxiv.org/abs/2401.13669), for Navier's 1822 contribution, Stokes's 1845 formulation, and the development of viscous-flow modelling.
-- C. L. Fefferman, **Existence and smoothness of the Navier–Stokes equation**, [official Clay problem statement](https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf), for the precise three-dimensional regularity question and the distinction from the two-dimensional theory. The [Clay problem page](https://www.claymath.org/millennium/navier-stokes-equation/) lists its current status.
-- O. R. Burggraf (1966), **Analytical and numerical studies of the structure of steady separated flows**, *Journal of Fluid Mechanics* 24(1), 113–151, [DOI](https://doi.org/10.1017/S0022112066000545), for early numerical cavity calculations up to Re = 400 and their corner eddies. This is historical context, not an additional dataset used in the present error tables.
+- S. R. Bistafa, **200 Years of the Navier-Stokes Equation**, [arXiv:2401.13669](https://arxiv.org/abs/2401.13669), for Navier's 1822 contribution, Stokes's 1845 formulation, and the development of viscous-flow modelling.
+- C. L. Fefferman, **Existence and smoothness of the Navier-Stokes equation**, [official Clay problem statement](https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf), for the precise three-dimensional regularity question and the distinction from the two-dimensional theory. The [Clay problem page](https://www.claymath.org/millennium/navier-stokes-equation/) lists its current status.
+- O. R. Burggraf (1966), **Analytical and numerical studies of the structure of steady separated flows**, *Journal of Fluid Mechanics* 24(1), 113-151, [DOI](https://doi.org/10.1017/S0022112066000545), for early numerical cavity calculations up to Re = 400 and their corner eddies. This is historical context, not an additional dataset used in the present error tables.
 
 The later benchmark studies are Ghia et al. (1982) and Botella & Peyret (1998), documented above. The discussion distinguishes the difficulty of computing a particular flow accurately from the general three-dimensional existence and smoothness problem.
 

@@ -8,7 +8,7 @@ The README shows two different views of the computed flow. Both are generated fr
 
 `dX/dτ = u_h(X), dY/dτ = v_h(X)`
 
-with classical fourth-order Runge–Kutta integration. The velocity is obtained as `(∂ψ/∂y, −∂ψ/∂x)` from a bicubic interpolant of the saved streamfunction. Using a single differentiable streamfunction preserves zero divergence in this interpolated velocity and makes its level sets the steady tracer trajectories. The field is held fixed. These paths show how fluid moves after the circulation has settled; they do not show further evolution of the velocity field or the onset of turbulence.
+with classical fourth-order Runge-Kutta integration. The velocity is obtained as `(∂ψ/∂y, −∂ψ/∂x)` from a bicubic interpolant of the saved streamfunction. Using a single differentiable streamfunction preserves zero divergence in this interpolated velocity and makes its level sets the steady tracer trajectories. The field is held fixed. These paths show how fluid moves after the circulation has settled; they do not show further evolution of the velocity field or the onset of turbulence.
 
 The tracer step is 0.00125 in units of L/U. Frames are separated by 0.2, covering tracer times 0 to 16. All three panels share this clock and a speed scale from 0 to the lid speed. Fading trails retain the previous 1.2 time units. The background gives the nodal speed distribution and faint streamfunction contours. The tracer clock starts from zero independently of each production simulation's final time. Each GIF loop resets the initial particle positions.
 

@@ -20,7 +20,7 @@
 \titleformat{\section}{\Large\sffamily\bfseries\color{ink}}{\color{teal}\thesection}{0.7em}{}
 \titleformat{\subsection}{\large\sffamily\bfseries\color{ink}}{\thesubsection}{0.6em}{}
 \pagestyle{fancy}\fancyhf{}
-\fancyhead[L]{\small\sffamily\color{muted} NAVIER--STOKES IN TWO DIMENSIONS}
+\fancyhead[L]{\small\sffamily\color{muted} NAVIER-STOKES IN TWO DIMENSIONS}
 \fancyhead[R]{\small\sffamily\color{muted} LID-DRIVEN CAVITY}
 \fancyfoot[L]{\small\sffamily\color{muted} Marouane Toumi}
 \fancyfoot[R]{\small\sffamily\color{muted}\thepage}
@@ -39,7 +39,7 @@
 \vspace*{0.7cm}
 {\sffamily\color{teal}\bfseries COMPUTATIONAL FLUID DYNAMICS \quad / \quad NUMERICAL STUDY\par}
 \vspace{0.55cm}
-{\sffamily\bfseries\color{ink}\fontsize{33}{38}\selectfont Navier--Stokes\\in two dimensions\par}
+{\sffamily\bfseries\color{ink}\fontsize{33}{38}\selectfont Navier-Stokes\\in two dimensions\par}
 \vspace{0.45cm}
 {\sffamily\Large\color{muted} The lid-driven cavity:\\approximation, verification, and what the flow reveals\par}
 \vspace{0.55cm}
@@ -49,13 +49,13 @@
 \vspace{0.3cm}
 A moving lid generates a primary recirculation, thin wall layers, and secondary
 corner vortices. This study follows those structures from the incompressible
-Navier--Stokes equations to a working finite-difference implementation.
+Navier-Stokes equations to a working finite-difference implementation.
 Each numerical choice is explained together with its cost, its verification,
 and the limits of the resulting comparison with published data.
 
 \begin{tabularx}{\linewidth}{@{}YYY@{}}
 \textbf{Model} & \textbf{Method} & \textbf{Evidence}\\
-2-D, viscous, incompressible & Vorticity--streamfunction & Manufactured solutions\\
+2-D, viscous, incompressible & Vorticity-streamfunction & Manufactured solutions\\
 Unit square, impulsive lid & Centered space, IMEX time & Two literature references
 \end{tabularx}
 \vfill
@@ -67,7 +67,7 @@ Unit square, impulsive lid & Centered space, IMEX time & Two literature referenc
 
 \section{Introduction}
 Predicting the pressure drop in a pipe or the force of air on an aircraft wing
-requires a mathematical description of how fluids move. The Navier--Stokes
+requires a mathematical description of how fluids move. The Navier-Stokes
 equations provide that description for Newtonian fluids: they express
 conservation of momentum, including the forces due to pressure and viscosity,
 and are solved together with conservation of mass. In appropriate forms, and
@@ -225,7 +225,7 @@ vorticity at these singular points has no grid-independent point value.
 
 \takeaway{The scalar formulation makes incompressibility straightforward and
 removes pressure from the solve. The difficulty moves to the wall vorticity.
-A velocity--pressure projection method would be more natural for extensions to
+A velocity-pressure projection method would be more natural for extensions to
 three dimensions; it is not required for this two-dimensional study.}
 
 \clearpage
@@ -435,7 +435,7 @@ with a smaller step; the helper is not an adaptive stability controller.
 \subsection{A mesh diagnostic is not a stability theorem}
 The cell Reynolds number is $\Rey_h=\Rey Uh$ (unit lid: $\Rey_h=\Rey h$).
 The familiar $\Rey_h\leq2$ condition concerns monotonicity of a one-dimensional
-steady centered advection--diffusion stencil. It is a useful warning about
+steady centered advection-diffusion stencil. It is a useful warning about
 resolution, not a universal cavity accuracy or temporal-stability criterion.
 On the $257^2$ grids here it is 1.56, 3.91, and 12.5. Reducing $\dt$ cannot
 substitute for resolving a thin wall layer.
@@ -485,7 +485,7 @@ $\dt=4\times10^{-4}(h/h_{17})^2$.
 The spatial horizon matters. The diffusion length $\sqrt{T/\Rey}\approx0.07$
 spans about one cell on the $17^2$ grid and nine cells on the $129^2$ grid, so
 vorticity errors generated at the walls reach the interior. Over a much
-shorter horizon such as $T=0.005$, about 96--99\% of the streamfunction error
+shorter horizon such as $T=0.005$, about 96-99\% of the streamfunction error
 would be the Poisson discretisation error of the exact initial vorticity, and
 the test would exercise neither the transport step nor the wall treatment.
 
@@ -568,7 +568,7 @@ quantity in the singular lid-driven cavity.}
 \section{What the cavity flow reveals}
 \includegraphics[width=0.92\linewidth]{flow_atlas.pdf}\par
 {\small\color{muted}Velocity streamlines over speed on $257^2$ grids. The common
-colour scale is 0--1 in lid-speed units. These are instantaneous streamlines,
+colour scale is 0-1 in lid-speed units. These are instantaneous streamlines,
 not particle trajectories through the transient.}
 
 The lid first creates a shear layer. Fluid moves right beneath it, turns down
@@ -678,7 +678,7 @@ equating benchmark agreement with continuum accuracy.
 {\small\color{muted}Computed profiles are drawn from the full grid;
 markers are published stations. Red crosses flag suspect published values
 but retain them in the headline RMS. The orange crosses at Re = 1000 show
-the reflected Botella--Peyret reference. The Re = 1000 and 3200 curves are
+the reflected Botella-Peyret reference. The Re = 1000 and 3200 curves are
 states that meet the common steady criterion. Their remaining drift is
 measured in the accuracy study.}
 
@@ -695,8 +695,8 @@ prescribed ($u=0$ at $y=0$, $u=1$ at $y=1$, $v=0$ at $x=0,1$), are included;
 they contribute zero error and therefore lower the RMS. This is an absolute
 dimensionless velocity error, not a percentage.
 
-The original paper was inspected at Tables I and II (pp.\ 398--399) and
-Table V (pp.\ 408--409). Two anomalous stations affect this study:
+The original paper was inspected at Tables I and II (pp.\ 398-399) and
+Table V (pp.\ 408-409). Two anomalous stations affect this study:
 \begin{itemize}
 \item At $\Rey=3200$, Table I prints $u=-0.86636$ at $y=0.4531$.
 It is retained. Replacing it by $-0.086636$ based on the current computation
@@ -749,7 +749,7 @@ explicitly when constructing the comparison.
 
 \begin{center}
 \begin{tabular}{@{}lrrr@{}}\toprule
-Quantity & Present, $257^2$ & Ghia & Botella--Peyret\\\midrule
+Quantity & Present, $257^2$ & Ghia & Botella-Peyret\\\midrule
 \tableinput{botella_rows.tex}
 \bottomrule
 \end{tabular}
@@ -826,51 +826,51 @@ replacing the present sine-transform diagonalisation. A smoothed lid is useful
 for a separate regularity study and should be labelled as a different problem.
 
 The current result is a compact, inspectable demonstration of solving,
-verifying and interpreting the two-dimensional Navier--Stokes equations.
+verifying and interpreting the two-dimensional Navier-Stokes equations.
 Its strongest claims are the ones connected directly to reproducible tests
 and published comparison data.
 
 \clearpage
 \begin{thebibliography}{9}
 \bibitem{bistafa}
-S.~R.~Bistafa. 200 Years of the Navier--Stokes Equation.
+S.~R.~Bistafa. 200 Years of the Navier-Stokes Equation.
 \href{https://arxiv.org/abs/2401.13669}{arXiv:2401.13669}.
 
 \bibitem{fefferman}
-C.~L.~Fefferman. Existence and smoothness of the Navier--Stokes equation.
+C.~L.~Fefferman. Existence and smoothness of the Navier-Stokes equation.
 Official Millennium Prize problem description, Clay Mathematics Institute.
 \href{https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf}{Problem statement}.
 
 \bibitem{burggraf1966}
 O.~R.~Burggraf (1966).
 Analytical and numerical studies of the structure of steady separated flows.
-\emph{Journal of Fluid Mechanics}, 24(1), 113--151.
+\emph{Journal of Fluid Mechanics}, 24(1), 113-151.
 \href{https://doi.org/10.1017/S0022112066000545}{doi:10.1017/S0022112066000545}.
 
 \bibitem{ghia1982}
 U.~Ghia, K.~N.~Ghia and C.~T.~Shin (1982).
-High-Re solutions for incompressible flow using the Navier--Stokes equations
+High-Re solutions for incompressible flow using the Navier-Stokes equations
 and a multigrid method.
-\emph{Journal of Computational Physics}, 48(3), 387--411.
+\emph{Journal of Computational Physics}, 48(3), 387-411.
 \href{https://doi.org/10.1016/0021-9991(82)90058-4}{doi:10.1016/0021-9991(82)90058-4}.
 
 \bibitem{botella1998}
 O.~Botella and R.~Peyret (1998).
 Benchmark spectral results on the lid-driven cavity flow.
-\emph{Computers \& Fluids}, 27(4), 421--433.
+\emph{Computers \& Fluids}, 27(4), 421-433.
 \href{https://doi.org/10.1016/S0045-7930(98)00002-4}{doi:10.1016/S0045-7930(98)00002-4}.
 
 \bibitem{eliu1996}
 W.~E and J.-G.~Liu (1996).
 Vorticity boundary condition and related issues for finite difference schemes.
-\emph{Journal of Computational Physics}, 124(2), 368--382.
+\emph{Journal of Computational Physics}, 124(2), 368-382.
 \href{https://doi.org/10.1006/jcph.1996.0066}{doi:10.1006/jcph.1996.0066}.
 
 \bibitem{arakawa1966}
 A.~Arakawa (1966).
 Computational design for long-term numerical integration of the equations of
 fluid motion: two-dimensional incompressible flow. Part I.
-\emph{Journal of Computational Physics}, 1(1), 119--143.
+\emph{Journal of Computational Physics}, 1(1), 119-143.
 \href{https://doi.org/10.1016/0021-9991(66)90015-5}{doi:10.1016/0021-9991(66)90015-5}.
 
 \bibitem{celik2008}
@@ -883,7 +883,7 @@ Procedure for estimation and reporting of uncertainty due to discretization in C
 \vspace{1cm}
 \textbf{Data provenance.} The comparison arrays were checked against the
 original tables. The paper scans are not redistributed in this repository.
-Source links, flags, and the Botella--Peyret reflection are documented in
+Source links, flags, and the Botella-Peyret reflection are documented in
 \code{docs/references.md}. The simulation and verification measurements are
 exported as machine-readable files under \code{data/}.
 

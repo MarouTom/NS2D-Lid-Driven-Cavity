@@ -124,7 +124,7 @@ def particle_movie():
     xx, yy = np.meshgrid(np.linspace(.035, .965, 16), np.linspace(.035, .965, 16))
     seed = np.column_stack((xx.ravel(), yy.ravel())) + rng.uniform(-.016, .016, (256, 2))
     fig = plt.figure(figsize=(13, 6.4), dpi=100)
-    fig.text(.045, .957, "NAVIER–STOKES  /  LID-DRIVEN CAVITY", fontsize=10, color="#70d6c0", weight="bold")
+    fig.text(.045, .957, "NAVIER-STOKES  /  LID-DRIVEN CAVITY", fontsize=10, color="#70d6c0", weight="bold")
     fig.text(.045, .894, "Fluid motion inside the cavity", fontsize=23, weight="bold")
     fig.text(.955, .90, "257 × 257 grids", fontsize=10, color=MUTED, ha="right")
     movies, heads, trails, records = [], [], [], []

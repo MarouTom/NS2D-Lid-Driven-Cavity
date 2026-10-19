@@ -1,4 +1,4 @@
-# 2D Incompressible Navier–Stokes: Lid-Driven Cavity Problem
+# 2D Incompressible Navier-Stokes: Lid-Driven Cavity Problem
 
 **Fluid motion in a lid-driven cavity, computed and visualised in Python.**
 
@@ -9,7 +9,7 @@
 
 *Passive tracers advected through the converged steady velocity fields on 257² grids. Colour shows speed relative to the lid velocity; all panels share the same time and colour scale. Tracer positions reset each time the animation loops.*
 
-A square cavity is filled with fluid, and its top wall slides to the right at constant speed. Viscosity drags the adjacent fluid along, driving a large clockwise vortex and smaller counter-rotating eddies in the corners. This project solves for that flow from the 2-D incompressible Navier–Stokes equations and checks the solution through grid-refinement studies and comparison with published benchmark results.
+A square cavity is filled with fluid, and its top wall slides to the right at constant speed. Viscosity drags the adjacent fluid along, driving a large clockwise vortex and smaller counter-rotating eddies in the corners. This project solves for that flow from the 2-D incompressible Navier-Stokes equations and checks the solution through grid-refinement studies and comparison with published benchmark results.
 
 **[Read the illustrated report](report/report.pdf)** · **[Explore the executed notebook](notebooks/lid_driven_cavity.ipynb)** · **[Inspect the reference data](docs/references.md)**
 
@@ -32,7 +32,7 @@ Final 257² fields at Re = 400, 1000 and 3200, using a common speed scale. All t
 
 ## The model
 
-A viscous incompressible fluid fills a unit square. The upper wall moves right with unit speed; the other walls are stationary. In the vorticity–streamfunction formulation,
+A viscous incompressible fluid fills a unit square. The upper wall moves right with unit speed; the other walls are stationary. In the vorticity-streamfunction formulation,
 
 $$
 \frac{\partial\omega}{\partial t}

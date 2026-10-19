@@ -19,7 +19,7 @@ def build():
 
     md(
         r"""
-# Navier–Stokes in two dimensions
+# Navier-Stokes in two dimensions
 ## The lid-driven cavity: model, approximations, evidence
 
 A single moving wall produces a primary circulation, thin wall layers and secondary corner vortices. This notebook connects that flow to an inspectable numerical method. It runs a small demonstration from scratch and displays the committed production evidence. **Large simulation caches are not required.**
@@ -165,9 +165,9 @@ rows = json.loads((ROOT/'data/validation.json').read_text())
 r = next(row for row in rows if row['Re']==1000 and row['N']==257)
 print(f"Present primary psi: {r['psi_min']:.7f}")
 print(f"Ghia discrepancy: {r['psi_error_percent']:.3f}%")
-print(f"Botella–Peyret discrepancy: {r['botella_psi_error_percent']:.3f}%")
-print(f"u RMS: Ghia {r['u_rms']:.3e}, Botella–Peyret {r['botella_u_rms']:.3e}")
-print(f"v RMS: Ghia {r['v_rms']:.3e}, Botella–Peyret {r['botella_v_rms']:.3e}")
+print(f"Botella-Peyret discrepancy: {r['botella_psi_error_percent']:.3f}%")
+print(f"u RMS: Ghia {r['u_rms']:.3e}, Botella-Peyret {r['botella_u_rms']:.3e}")
+print(f"v RMS: Ghia {r['v_rms']:.3e}, Botella-Peyret {r['botella_v_rms']:.3e}")
 """
     )
     md(

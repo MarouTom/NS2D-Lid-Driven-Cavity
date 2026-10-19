@@ -13,7 +13,7 @@ The numerical scheme is unchanged. This study separates four questions: approxim
 | Cavity grid sensitivity | Three independently converged grids per Re | `accuracy.json`, `grid` |
 | Remaining settling | Continue each final state for ten time units using dt and dt/2 | `accuracy/steady_*.json` |
 | Effect of earlier stopping times | Compare fresh T = 150/300 snapshots with the converged fine-grid state | `accuracy.json`, `steady[].milestone_changes` |
-| Reference agreement | Ghia at all three Re; reflected Botella–Peyret at Re = 1000 | `validation.json`, `centerline_comparisons.csv` |
+| Reference agreement | Ghia at all three Re; reflected Botella-Peyret at Re = 1000 | `validation.json`, `centerline_comparisons.csv` |
 
 All nine production states start from rest. The grid sequences are N = 65, 129, 257 at Re = 400 and 1000, and N = 129, 193, 257 at Re = 3200. The latter avoids a severely under-resolved 65² mesh in the fit. Every run uses the same absolute update-rate stopping threshold, 1e-6. Reaching the time cap without meeting it is a failed steady study, not a successful completion.
 

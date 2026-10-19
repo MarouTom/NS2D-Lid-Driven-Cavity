@@ -731,7 +731,7 @@ def accuracy_outputs(accuracy, rows, cases, fourth):
             ax.plot(0,fit["extrapolated"],"+",color="#172f3e",ms=9)
         ax.axhline(bm.GHIA_VORTEX[r["Re"]].psi,color="#839299",lw=1,label="Ghia")
         if r["Re"]==1000:
-            ax.axhline(bm.BP_VORTEX.psi,color=ORANGE,lw=1,label="Botella–Peyret")
+            ax.axhline(bm.BP_VORTEX.psi,color=ORANGE,lw=1,label="Botella-Peyret")
         ax.set(xlabel="Grid spacing h",ylabel=r"Primary $\psi_{\min}$",title=f"Re = {r['Re']}")
         ax.ticklabel_format(axis="x",style="sci",scilimits=(0,0))
         ax.grid(alpha=.18)
