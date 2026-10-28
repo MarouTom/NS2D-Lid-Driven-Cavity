@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="310" viewBox="0 0 1200 310" role="img" aria-labelledby="title desc">
+  <title id="title">One time step of the solver</title>
+  <desc id="desc">Five stages repeated each step: reconstruct wall vorticity with the Thom condition, evaluate centered convection explicitly, solve the implicit vorticity diffusion system, solve the streamfunction Poisson equation with a sine transform, then record the residual and diagnostics. The loop repeats until the residual falls below 1e-6.</desc>
+  <rect width="1200" height="310" rx="24" fill="#F6F4EE"/>
+
+  <text x="64" y="50" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" letter-spacing="2.5" fill="#5B6676">ONE TIME STEP · t → t + dt</text>
+
+  <g id="stages" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <g transform="translate(64 74)">
+      <rect width="196" height="140" rx="10" fill="#FFFFFF" stroke="#D9D4C7" stroke-width="1.5"/>
+      <text x="20" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#AA4455">01</text>
+      <text x="20" y="68" font-size="21" font-weight="600" fill="#14213D">Wall vorticity</text>
+      <text x="20" y="98" font-size="18" fill="#5B6676">Thom condition</text>
+      <text x="20" y="122" font-size="18" fill="#5B6676">from ψ near walls</text>
+    </g>
+    <g transform="translate(283 74)">
+      <rect width="196" height="140" rx="10" fill="#FFFFFF" stroke="#D9D4C7" stroke-width="1.5"/>
+      <text x="20" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#AA4455">02</text>
+      <text x="20" y="68" font-size="21" font-weight="600" fill="#14213D">Convection</text>
+      <text x="20" y="98" font-size="18" fill="#5B6676">centered in space</text>
+      <text x="20" y="122" font-size="18" fill="#5B6676">explicit in time</text>
+    </g>
+    <g transform="translate(502 74)">
+      <rect width="196" height="140" rx="10" fill="#FFFFFF" stroke="#D9D4C7" stroke-width="1.5"/>
+      <text x="20" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#AA4455">03</text>
+      <text x="20" y="68" font-size="21" font-weight="600" fill="#14213D">Vorticity</text>
+      <text x="20" y="98" font-size="18" fill="#5B6676">implicit diffusion</text>
+      <text x="20" y="122" font-size="18" fill="#5B6676">SPD solve</text>
+    </g>
+    <g transform="translate(721 74)">
+      <rect width="196" height="140" rx="10" fill="#FFFFFF" stroke="#D9D4C7" stroke-width="1.5"/>
+      <text x="20" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#AA4455">04</text>
+      <text x="20" y="68" font-size="21" font-weight="600" fill="#14213D">Streamfunction</text>
+      <text x="20" y="98" font-size="18" fill="#5B6676">−Δψ = ω</text>
+      <text x="20" y="122" font-size="18" fill="#5B6676">sine transform</text>
+    </g>
+    <g transform="translate(940 74)">
+      <rect width="196" height="140" rx="10" fill="#FFFFFF" stroke="#14213D" stroke-width="1.5"/>
+      <text x="20" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#AA4455">05</text>
+      <text x="20" y="68" font-size="21" font-weight="600" fill="#14213D">Diagnostics</text>
+      <text x="20" y="98" font-size="18" fill="#5B6676">residual, energy,</text>
+      <text x="20" y="122" font-size="18" fill="#5B6676">divergence</text>
+    </g>
+  </g>
+
+  <g id="arrows" fill="none" stroke="#14213D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M266 144H277M272 138L278 144L272 150"/>
+    <path d="M485 144H496M491 138L497 144L491 150"/>
+    <path d="M704 144H715M710 138L716 144L710 150"/>
+    <path d="M923 144H934M929 138L935 144L929 150"/>
+    <path d="M1038 220V258Q1038 268 1028 268H172Q162 268 162 258V226" stroke="#004488"/>
+    <path d="M155 230L162 220L169 230" stroke="#004488"/>
+  </g>
+  <rect x="440" y="254" width="320" height="28" fill="#F6F4EE"/>
+  <text x="600" y="275" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#004488">repeat until residual &lt; 1e-6</text>
+</svg>

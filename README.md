@@ -1,6 +1,6 @@
 <div align="center">
 
-# 2D Incompressible Navier-Stokes: The Lid-Driven Cavity
+<img src="assets/readme/hero.svg" width="100%" alt="Lid-Driven Cavity: a 2-D incompressible Navier-Stokes solver, checked against manufactured solutions and published benchmarks. The computed streamlines at Re = 1000 show one large clockwise vortex and two small corner eddies.">
 
 **A verified finite-difference solver for the classic CFD benchmark, with grid-convergence evidence, literature validation and animated visualizations.**
 
@@ -110,15 +110,7 @@ with $u=\psi_y$, $v=-\psi_x$ and $\mathrm{Re}=UL/\nu$. The streamfunction enforc
 
 Sparse LU and conjugate gradient with an incomplete-Cholesky preconditioner are also available. [The report](report/report.pdf) derives the formulas, including the wall terms and the time-step restrictions.
 
-```mermaid
-flowchart LR
-    A[Current streamfunction] --> B[Reconstruct wall vorticity]
-    B --> C[Evaluate centered convection]
-    C --> D[Solve implicit vorticity system]
-    D --> E[Solve streamfunction Poisson equation]
-    E --> F[Measure residual and record diagnostics]
-    F --> A
-```
+<img src="assets/readme/time-step.svg" width="100%" alt="One time step: reconstruct wall vorticity with the Thom condition, evaluate centered convection explicitly, solve the implicit vorticity system, solve the streamfunction Poisson equation by sine transform, then record the residual and diagnostics. Repeat until the residual falls below 1e-6.">
 
 > [!NOTE]
 > **Why not a spectral code such as FluidSim?** [FluidSim](https://fluidsim.readthedocs.io/) is designed around *periodic* pseudospectral solvers. The cavity has four no-slip walls and singular lid corners, so periodic Fourier bases do not apply without immersed-boundary or penalisation terms that would add their own error. FluidSim's scientific acceptance gate is still a useful standard, so this repository is checked against it [below](#scientific-acceptance-checklist).
