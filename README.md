@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/readme/hero.svg" width="100%" alt="Lid-Driven Cavity: a 2-D incompressible Navier-Stokes solver, checked against manufactured solutions and published benchmarks. The computed streamlines at Re = 1000 show one large clockwise vortex and two small corner eddies.">
+<img src="assets/readme/hero.svg" width="100%" alt="Lid-Driven Cavity: a 2-D incompressible Navier-Stokes solver, validated against manufactured solutions and published benchmarks. The computed flow at Re = 1000 is drawn as a pixel mosaic of fluid speed with streamlines and tracer trails: one large clockwise vortex and two small corner eddies.">
 
 **A verified finite-difference solver for the classic CFD benchmark, with grid-convergence evidence, literature validation and animated visualizations.**
 
